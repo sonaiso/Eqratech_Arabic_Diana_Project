@@ -11,7 +11,27 @@ This directory contains the implementation for training a BERT model on Arabic p
 
 ## Quick Start
 
-### 1. Install Dependencies
+### 1. Automated Setup (Recommended)
+
+The easiest way to set up BERT training is to use the automated setup script:
+
+```bash
+python setup_bert_training.py --install
+```
+
+This will:
+- ✓ Check Python version compatibility
+- ✓ Install all required dependencies
+- ✓ Verify configuration files
+- ✓ Check data availability
+- ✓ Create necessary directories
+- ✓ Run validation tests
+
+### 2. Manual Setup
+
+If you prefer manual setup:
+
+#### Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -26,7 +46,13 @@ This will install:
 - pandas, numpy, scikit-learn (data processing)
 - tensorboard (optional, for training visualization)
 
-### 2. Run Training
+#### Verify Setup
+
+```bash
+python test_setup.py
+```
+
+### 3. Run Training
 
 ```bash
 python run_training.py --config config/training_config.json
@@ -39,6 +65,24 @@ The script will:
 4. Create a BERT model
 5. Train using curriculum learning (3 stages with increasing sequence length)
 6. Save checkpoints and final model
+
+## Setup Script Options
+
+The `setup_bert_training.py` script supports several options:
+
+```bash
+# Basic setup without installing dependencies
+python setup_bert_training.py
+
+# Setup with automatic dependency installation
+python setup_bert_training.py --install
+
+# Force reinstall all dependencies
+python setup_bert_training.py --force-install
+
+# View help
+python setup_bert_training.py --help
+```
 
 ## Training Configuration
 
@@ -122,6 +166,22 @@ tensorboard --logdir ./logs
 ```
 
 ## Troubleshooting
+
+### Setup Issues
+
+**Setup script fails with permission errors**
+```bash
+# Run with user-specific installation
+python setup_bert_training.py --install --user
+```
+
+**Dependencies conflict with existing packages**
+```bash
+# Create a virtual environment first
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+python setup_bert_training.py --install
+```
 
 ### Missing Dependencies
 
