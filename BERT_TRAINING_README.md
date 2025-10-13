@@ -125,16 +125,34 @@ print(decoded)
 
 After training completes, load and use the model:
 
+### Quick Start
+
+Run the example script to see usage demonstrations:
+
+```bash
+python example_usage.py
+```
+
+This script demonstrates:
+- Loading a trained BERT model
+- Tokenizing Arabic text
+- Making predictions with masked language modeling
+- Saving and loading tokenizer vocabulary
+
+### Manual Usage
+
 ```python
 from transformers import BertForMaskedLM
 from utf8_tokenizer import UTF8PhonemeTokenizer
 
 # Load model
-model = BertForMaskedLM.from_pretrained('./output/bert-arabic-phoneme/stage_3_full_sequences/final_model')
+model = BertForMaskedLM.from_pretrained('./output/bert-arabic-phoneme/final_model')
+# Or for curriculum training:
+# model = BertForMaskedLM.from_pretrained('./output/bert-arabic-phoneme/stage_3_full_sequences/final_model')
 
 # Load tokenizer
 tokenizer = UTF8PhonemeTokenizer()
-tokenizer.load_vocab('./output/bert-arabic-phoneme/stage_3_full_sequences/final_model/vocab.json')
+tokenizer.load_vocab('./output/bert-arabic-phoneme/final_model/vocab.json')
 
 # Use for predictions
 text = "مرحبا [MASK] العالم"

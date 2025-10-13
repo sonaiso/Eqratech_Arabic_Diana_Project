@@ -69,7 +69,9 @@ python run_server.py --host 127.0.0.1 --port 8000
 
 ## Documentation
 
+- [Quick Start Guide](QUICKSTART.md) - Get started in under 5 minutes
 - [BERT Training Guide](BERT_TRAINING_README.md) - Complete guide for training BERT models
+- [Usage Examples](example_usage.py) - Code examples for using trained models
 
 ## Requirements
 
