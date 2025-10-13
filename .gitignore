@@ -39,6 +39,7 @@ output/
 logs/
 data/
 tokenizers/
+examples/
 
 # Model checkpoints
 checkpoint-*/
