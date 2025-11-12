@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أنشطة النحو العربي - Arabic Grammar Activities</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>أنشطة النحو العربي</h1>
+            <h2>Arabic Grammar Activities</h2>
+        </header>
+        
+        <main>
+            <div class="info-card">
+                <p>إجمالي الأنشطة المتاحة: <strong id="total-activities">{{ total_activities }}</strong></p>
+                <p>Total Available Activities: <strong>{{ total_activities }}</strong></p>
+            </div>
+            
+            <div class="activities-section">
+                <h3>الأنشطة المتاحة / Available Activities</h3>
+                <button onclick="loadActivities()" class="load-btn">تحميل الأنشطة / Load Activities</button>
+                <div id="activities-list" class="activities-list"></div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>مشروع Eqratech العربي للنحو - Eqratech Arabic Grammar Project</p>
+        </footer>
+    </div>
+    
+    <script src="/static/app.js"></script>
+</body>
+</html>
