@@ -1,0 +1,14 @@
+{
+  "name": "Eqratech Python 3 Devcontainer",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "postCreateCommand": "python -m pip install --upgrade pip && pip install -r requirements.txt",
+  "forwardPorts": [8000],
+  "extensions": ["ms-python.python", "ms-python.vscode-pylance"],
+  "remoteUser": "vscode"
+}
