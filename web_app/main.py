@@ -49,14 +49,14 @@ def load_engines():
     try:
         engine_classes = collect_engines()
         if not isinstance(engine_classes, (list, tuple)):
-            logger.warning("collect_engines did not return a list/tuple. Got: %%s", type(engine_classes))
+            logger.warning("collect_engines did not return a list/tuple. Got: %s", type(engine_classes))
             engine_classes = list(engine_classes)
 
         for e in engine_classes:
             if isinstance(e, type):
                 ENGINES.append(e)
             else:
-                logger.warning("collect_engines returned non-class item: %%s", type(e))
+                logger.warning("collect_engines returned non-class item: %s", type(e))
     except Exception:
         logger.exception("Error while collecting engines")
         raise
