@@ -4,7 +4,7 @@
 (* ============================================================ *)
 
 Require Import Coq.Strings.String.
-Require Import ArabicGrammar.
+Require Import ArabicGrammar.ArabicGrammar.
 
 (* ============================================================ *)
 (* الجزء الأول: علامات الإعراب الفرعية                          *)
