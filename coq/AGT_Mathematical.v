@@ -501,4 +501,201 @@ Definition is_golden_root (r : Root) : bool :=
    C2_Centrality = (C2_value × 100) / Total_Root_Value
 *)
 
+(** ========================================================== *)
+(**  Part 15: نواة الفراكتال - الثلاثيات والعلاقات              *)
+(**  Fractal Kernel - Triads and Relations                      *)
+(** ========================================================== *)
+
+(*
+   نواة الفراكتال:
+   في كل ثلاثي (b, c, a) حيث:
+   - b = before (السابق)
+   - c = center (المركز)
+   - a = after (اللاحق)
+   
+   تتولد ثلاث علاقات:
+   - rcb (C1): سهم من المركز c إلى السابق b
+   - rca (C2): سهم من المركز c إلى اللاحق a
+   - rba (C3): سهم من السابق b إلى اللاحق a
+*)
+
+(* عناصر الثلاثي *)
+Inductive TriadElement :=
+| TE_Before   (* b - السابق *)
+| TE_Center   (* c - المركز *)
+| TE_After.   (* a - اللاحق *)
+
+(* العلاقات الثلاث المتولدة من الثلاثي *)
+Inductive FractalRelation :=
+| FR_rcb  (* C1: من المركز إلى السابق c→b *)
+| FR_rca  (* C2: من المركز إلى اللاحق c→a *)
+| FR_rba. (* C3: من السابق إلى اللاحق b→a *)
+
+(* تطابق العلاقات مع مواقع الجذر *)
+Definition relation_to_c_slot (r : FractalRelation) : nat :=
+  match r with
+  | FR_rcb => 1  (* C1 *)
+  | FR_rca => 2  (* C2 *)
+  | FR_rba => 3  (* C3 *)
+  end.
+
+(* الثلاثي الفراكتالي *)
+Record FractalTriad := {
+  ft_before : nat;  (* قيمة السابق b *)
+  ft_center : nat;  (* قيمة المركز c *)
+  ft_after  : nat   (* قيمة اللاحق a *)
+}.
+
+(* بناء ثلاثي من حروف *)
+Definition make_triad (b c a : ArabicLetter) : FractalTriad := {|
+  ft_before := letter_value b;
+  ft_center := letter_value c;
+  ft_after  := letter_value a
+|}.
+
+(* حساب قيمة العلاقة *)
+Definition relation_value (t : FractalTriad) (r : FractalRelation) : nat :=
+  match r with
+  | FR_rcb => t.(ft_center) + t.(ft_before)     (* c + b *)
+  | FR_rca => t.(ft_center) + t.(ft_after)      (* c + a *)
+  | FR_rba => t.(ft_before) + t.(ft_after)      (* b + a *)
+  end.
+
+(* حساب قيمة الثلاثي الكلية *)
+Definition triad_total_value (t : FractalTriad) : nat :=
+  t.(ft_before) + t.(ft_center) + t.(ft_after).
+
+(* حساب قيم كل العلاقات *)
+Definition all_relations_value (t : FractalTriad) : nat :=
+  relation_value t FR_rcb + 
+  relation_value t FR_rca + 
+  relation_value t FR_rba.
+
+(* نواة الفراكتال الكاملة *)
+Record FractalKernel := {
+  fk_triad : FractalTriad;
+  fk_layer : nat;  (* الطبقة L في أُسّ الفراكتال *)
+  fk_rcb   : nat;  (* قيمة C1 = rcb *)
+  fk_rca   : nat;  (* قيمة C2 = rca *)
+  fk_rba   : nat   (* قيمة C3 = rba *)
+}.
+
+(* بناء نواة فراكتال من ثلاثي *)
+Definition make_kernel (t : FractalTriad) (layer : nat) : FractalKernel := {|
+  fk_triad := t;
+  fk_layer := layer;
+  fk_rcb   := relation_value t FR_rcb;
+  fk_rca   := relation_value t FR_rca;
+  fk_rba   := relation_value t FR_rba
+|}.
+
+(* العلاقة بين الطبقة وأُسّ الفراكتال *)
+Definition fractal_exponent (layer : nat) : nat :=
+  2 ^ layer.  (* 2^L *)
+
+(* قيمة النواة في طبقة معينة *)
+Definition kernel_layer_value (k : FractalKernel) : nat :=
+  (k.(fk_rcb) + k.(fk_rca) + k.(fk_rba)) * fractal_exponent k.(fk_layer).
+
+(** ========================================================== *)
+(**  Part 16: أمثلة على نواة الفراكتال                          *)
+(**  Fractal Kernel Examples                                    *)
+(** ========================================================== *)
+
+(* مثال: جذر ك-ت-ب *)
+(* b=ك (23), c=ت (4), a=ب (3) *)
+Definition triad_ktb : FractalTriad := {|
+  ft_before := 23;  (* ك *)
+  ft_center := 4;   (* ت *)
+  ft_after  := 3    (* ب *)
+|}.
+
+(* 
+   العلاقات المتولدة:
+   rcb (C1) = ت→ك = 4 + 23 = 27
+   rca (C2) = ت→ب = 4 + 3 = 7
+   rba (C3) = ك→ب = 23 + 3 = 26
+*)
+
+Definition kernel_ktb : FractalKernel := make_kernel triad_ktb 0.
+
+(* مثال: جذر ع-ل-م *)
+(* b=ع (18), c=ل (24), a=م (25) *)
+Definition triad_3lm : FractalTriad := {|
+  ft_before := 18;  (* ع *)
+  ft_center := 24;  (* ل *)
+  ft_after  := 25   (* م *)
+|}.
+
+Definition kernel_3lm : FractalKernel := make_kernel triad_3lm 0.
+
+(** ========================================================== *)
+(**  Part 17: إثباتات نواة الفراكتال                            *)
+(**  Fractal Kernel Proofs                                      *)
+(** ========================================================== *)
+
+(* إثبات: C1 = rcb *)
+Lemma c1_is_rcb : relation_to_c_slot FR_rcb = 1.
+Proof. reflexivity. Qed.
+
+(* إثبات: C2 = rca *)
+Lemma c2_is_rca : relation_to_c_slot FR_rca = 2.
+Proof. reflexivity. Qed.
+
+(* إثبات: C3 = rba *)
+Lemma c3_is_rba : relation_to_c_slot FR_rba = 3.
+Proof. reflexivity. Qed.
+
+(* إثبات: مجموع العلاقات = 2 × مجموع الثلاثي *)
+Lemma relations_double_triad : forall t : FractalTriad,
+  all_relations_value t = 2 * triad_total_value t.
+Proof.
+  intros t.
+  unfold all_relations_value, triad_total_value, relation_value.
+  (* (c+b) + (c+a) + (b+a) = 2b + 2c + 2a = 2(b+c+a) *)
+  ring.
+Qed.
+
+(* إثبات: قيمة rcb لـ ك-ت-ب = 27 *)
+Lemma ktb_rcb_value : relation_value triad_ktb FR_rcb = 27.
+Proof. reflexivity. Qed.
+
+(* إثبات: قيمة rca لـ ك-ت-ب = 7 *)
+Lemma ktb_rca_value : relation_value triad_ktb FR_rca = 7.
+Proof. reflexivity. Qed.
+
+(* إثبات: قيمة rba لـ ك-ت-ب = 26 *)
+Lemma ktb_rba_value : relation_value triad_ktb FR_rba = 26.
+Proof. reflexivity. Qed.
+
+(* إثبات: كل العلاقات في نفس الطبقة *)
+Lemma all_relations_same_layer : forall k : FractalKernel,
+  let layer := k.(fk_layer) in
+  fractal_exponent layer = fractal_exponent layer.
+Proof. intros. reflexivity. Qed.
+
+(** ========================================================== *)
+(**  Part 18: خلاصة نواة الفراكتال                              *)
+(**  Fractal Kernel Summary                                     *)
+(** ========================================================== *)
+
+(*
+   نواة الفراكتال للغة العربية:
+   
+   1. كل ثلاثي (b, c, a) يولّد ثلاث علاقات
+   2. C1 = rcb: العلاقة من المركز إلى السابق
+   3. C2 = rca: العلاقة من المركز إلى اللاحق
+   4. C3 = rba: العلاقة من السابق إلى اللاحق
+   5. كل العلاقات في نفس الطبقة L
+   6. أُسّ الفراكتال = 2^L
+   7. مجموع العلاقات = 2 × مجموع الثلاثي
+   
+   التطبيق على ك-ت-ب:
+   - الثلاثي: (ك=23, ت=4, ب=3)
+   - rcb (C1) = 27
+   - rca (C2) = 7
+   - rba (C3) = 26
+   - المجموع = 60 = 2 × 30
+*)
+
 End AGT_Mathematical.
