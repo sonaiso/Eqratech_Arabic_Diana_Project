@@ -4,7 +4,7 @@
 (**  القيم الرياضية والنموذج الفراكتالي للغة العربية            *)
 (** *********************************************************** *)
 
-From Coq Require Import Nat List Bool Arith.
+From Coq Require Import Nat List Bool Arith Lia.
 Import ListNotations.
 
 Module AGT_Mathematical.
@@ -230,7 +230,7 @@ Inductive LinguisticLevel :=
 | Level_Word      (* الكلمة *)
 | Level_Phrase    (* العبارة *)
 | Level_Sentence  (* الجملة *)
-| Level_Discourse.(* الخطاب *)
+| Level_Discourse. (* الخطاب *)
 
 Definition level_index (l : LinguisticLevel) : nat :=
   match l with
@@ -548,7 +548,7 @@ Proof. reflexivity. Qed.
 Lemma letter_value_positive : forall l : ArabicLetter,
   letter_value l > 0.
 Proof.
-  intro l. destruct l; simpl; omega.
+  intro l. destruct l; simpl; lia.
 Qed.
 
 (* إثبات: قيمة الجذر الثلاثي >= 6 (أقل ثلاثة حروف) *)
@@ -570,7 +570,7 @@ Lemma c2_always_in_root : forall r : Root,
 Proof.
   intro r. unfold root_value.
   (* C2 قيمته أقل من أو تساوي المجموع *)
-  omega.
+  lia.
 Qed.
 
 (* إثبات: مجموع الأحرف الوظيفية = 179 *)
@@ -1270,16 +1270,7 @@ Definition n_extra (mp : MorphPattern) : nat :=
    - fk_rba: علاقة C1→C3
 *)
 
-(* دالة فيبوناتشي القياسية *)
-Fixpoint fib (n : nat) : nat :=
-  match n with
-  | 0 => 0
-  | S n' =>
-    match n' with
-    | 0 => 1
-    | S n'' => fib n' + fib n''
-    end
-  end.
+(* دالة فيبوناتشي (معرّفة سابقاً في Part 8) *)
 
 (* التحقق من قيم فيبوناتشي *)
 Lemma fib_0 : fib 0 = 0. Proof. reflexivity. Qed.
@@ -1470,13 +1461,29 @@ Proof. reflexivity. Qed.  (* القيمة النهائية *)
    3. قيم العلاقات الفراكتالية (rca، rba)
 *)
 
-(* إثبات تزايد التعقيد *)
-Lemma complexity_increases_with_extras :
-  morphological_complexity mp_kataba < morphological_complexity mp_kaataba.
+(* إثبات تزايد التعقيد - باستخدام الحساب المباشر *)
+(* كَتَبَ = 1, كاتَبَ = 9 (حيث 1 < 9) *)
+(* كاتَبَ = 9, تكاتَبَ = 17 (حيث 9 < 17) *)
+
+(* نعرّف دالة التحقق من أن x < y *)
+Definition is_less (x y : nat) : bool :=
+  Nat.ltb x y.
+
+Lemma complexity_kataba_is_1 : morphological_complexity mp_kataba = 1.
 Proof. reflexivity. Qed.
 
-Lemma complexity_kaataba_lt_takaataba :
-  morphological_complexity mp_kaataba < morphological_complexity mp_takaataba.
+Lemma complexity_kaataba_is_9 : morphological_complexity mp_kaataba = 9.
+Proof. reflexivity. Qed.
+
+Lemma complexity_takaataba_is_17 : morphological_complexity mp_takaataba = 17.
+Proof. reflexivity. Qed.
+
+Lemma complexity_increases_kataba_kaataba :
+  is_less (morphological_complexity mp_kataba) (morphological_complexity mp_kaataba) = true.
+Proof. reflexivity. Qed.
+
+Lemma complexity_increases_kaataba_takaataba :
+  is_less (morphological_complexity mp_kaataba) (morphological_complexity mp_takaataba) = true.
 Proof. reflexivity. Qed.
 
 (** ========================================================== *)
@@ -1559,7 +1566,7 @@ Inductive ExtraFunction :=
 (* 4. وظائف صوتية/فونولوجية *)
 | EF_Phonological_Ease         (* تسهيل: همزة الوصل *)
 | EF_Phonological_Extension    (* مد: الألف، الواو، الياء *)
-| EF_Phonological_Assimilation.(* إدغام *)
+| EF_Phonological_Assimilation. (* إدغام *)
 
 (* ربط الأحرف الزائدة بوظائفها *)
 Record FunctionalExtra := {
@@ -1773,7 +1780,7 @@ Inductive CaseMarker :=
 | CM_Ya          (* ياء - جر المثنى وجمع المذكر السالم *)
 | CM_TanweenDamm (* تنوين ضم *)
 | CM_TanweenFath (* تنوين فتح *)
-| CM_TanweenKasr.(* تنوين كسر *)
+| CM_TanweenKasr. (* تنوين كسر *)
 
 (* دالة توليد علامة الإعراب *)
 Definition generate_case_marker (ct : CaseType) (mf : MorphFeatures) : CaseMarker :=
@@ -1810,9 +1817,17 @@ Proof. reflexivity. Qed.
 (**  Complete Generative Model                                    *)
 (** ========================================================== *)
 
+(* سجل للجذر مع قيمته الكلية *)
+Record RootWithTotal := {
+  rwt_before : nat;  (* قيمة C1 *)
+  rwt_center : nat;  (* قيمة C2 *)
+  rwt_after  : nat;  (* قيمة C3 *)
+  rwt_total  : nat   (* المجموع الكلي *)
+}.
+
 (* سجل شامل لتمثيل الكلمة العربية المولّدة *)
 Record GeneratedWord := {
-  gw_root : FractalTriad;           (* الجذر الثلاثي *)
+  gw_root : RootWithTotal;           (* الجذر مع قيمته *)
   gw_extras : list FunctionalExtra; (* الأحرف الزائدة *)
   gw_vowels : list LayeredVowel;    (* الحركات *)
   gw_features : MorphFeatures;      (* السمات الصرفية *)
@@ -1821,17 +1836,17 @@ Record GeneratedWord := {
 
 (* دالة حساب تعقيد الكلمة المولّدة *)
 Definition generated_word_complexity (gw : GeneratedWord) : nat :=
-  let root_value := gw.(gw_root).(ft_total) in
+  let root_value := gw.(gw_root).(rwt_total) in
   let extras_value := fold_left (fun acc fe => acc + fe.(fe_value)) gw.(gw_extras) 0 in
   let vowels_value := fold_left (fun acc lv => acc + layered_vowel_complexity lv) gw.(gw_vowels) 0 in
   root_value + extras_value + vowels_value.
 
 (* مثال: توليد كلمة "مُسْتَكْتَب" *)
-Definition root_ktb_triad := {|
-  ft_before := L_Kaf;
-  ft_center := L_Ta;
-  ft_after := L_Ba;
-  ft_total := 30
+Definition root_ktb_rwt := {|
+  rwt_before := 23;  (* ك *)
+  rwt_center := 4;   (* ت *)
+  rwt_after := 3;    (* ب *)
+  rwt_total := 30
 |}.
 
 Definition extra_mim_mustaktab := {|
@@ -1862,7 +1877,7 @@ Definition vowel_damma_mustaktab := {|
 |}.
 
 Definition mustaktab := {|
-  gw_root := root_ktb_triad;
+  gw_root := root_ktb_rwt;
   gw_extras := [extra_mim_mustaktab; extra_sin_mustaktab; extra_ta_mustaktab];
   gw_features := features_kitaabun;
   gw_vowels := [vowel_damma_mustaktab];
@@ -2099,22 +2114,22 @@ Definition default_features := {|
 
 (* أمثلة: توليد كلمات من الجذر ك-ت-ب *)
 
-(* كَتَبَ - فعل ماضي مجرد *)
-Definition word_kataba := generate_word_state 
+(* كَتَبَ - فعل ماضي مجرد (Part 40) *)
+Definition word_kataba_gen := generate_word_state 
   root_ktb_abstract 
   vowel_pattern_past_1 
   extra_pattern_bare 
   default_features.
 
 (* استكتب - فعل طلب *)
-Definition word_istaktaba := generate_word_state 
+Definition word_istaktaba_gen := generate_word_state 
   root_ktb_abstract 
   vowel_pattern_past_1 
   extra_pattern_istaf3ala 
   default_features.
 
 (* مكتوب - اسم مفعول *)
-Definition word_maktub := generate_word_state 
+Definition word_maktub_gen := generate_word_state 
   root_ktb_abstract 
   {| vp_v1 := H_Sukun; vp_v2 := H_Damma; vp_v3 := H_Sukun |}
   extra_pattern_maf3ul 
@@ -2127,27 +2142,27 @@ Definition word_maktub := generate_word_state
 
 (* إثبات: الفعل المجرد له تعقيد = 1 *)
 Lemma bare_verb_complexity_is_1 :
-  ws_complexity word_kataba = 1.
+  ws_complexity word_kataba_gen = 1.
 Proof. reflexivity. Qed.
 
 (* إثبات: استفعل له تعقيد = Fib(5) = 5 *)
 Lemma istaf3ala_complexity :
-  ws_complexity word_istaktaba = fib 5.
+  ws_complexity word_istaktaba_gen = fib 5.
 Proof. reflexivity. Qed.
 
 (* إثبات: مفعول له تعقيد = Fib(4) = 3 *)
 Lemma maf3ul_complexity :
-  ws_complexity word_maktub = fib 4.
+  ws_complexity word_maktub_gen = fib 4.
 Proof. reflexivity. Qed.
 
 (* إثبات: التعقيد يزداد مع عدد الزوائد *)
 Lemma complexity_increases_with_extras_gen :
-  ws_complexity word_kataba < ws_complexity word_maktub.
+  ws_complexity word_kataba_gen < ws_complexity word_maktub_gen.
 Proof. simpl. auto. Qed.
 
 (* إثبات: استفعل أكثر تعقيداً من مفعول *)
 Lemma istaf3ala_more_complex_than_maf3ul :
-  ws_complexity word_maktub < ws_complexity word_istaktaba.
+  ws_complexity word_maktub_gen < ws_complexity word_istaktaba_gen.
 Proof. simpl. auto. Qed.
 
 (** ========================================================== *)
