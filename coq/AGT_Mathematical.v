@@ -1893,4 +1893,298 @@ Definition mustaktab_complexity := generated_word_complexity mustaktab.
       - لواحق الجمع والتثنية والتأنيث
 *)
 
+(** ========================================================== *)
+(**  Part 37: تجريد الجذر - RootAbstract                        *)
+(**  من (C₂, C₁, C₃) إلى بنية تجريدية                          *)
+(** ========================================================== *)
+
+(* علاقة المخرج بين حرفين *)
+Inductive MakhrajRelation :=
+| MR_Same     (* نفس المخرج *)
+| MR_Near     (* مخرج قريب *)
+| MR_Medium   (* مسافة متوسطة *)
+| MR_Far.     (* مخرج بعيد *)
+
+(* علاقة الصفات بين حرفين *)
+Inductive FeatureRelation2 :=
+| FR2_SameVoicing     (* نفس الجهر/الهمس *)
+| FR2_SameEmphasis    (* نفس الإطباق *)
+| FR2_SameManner      (* نفس طريقة النطق *)
+| FR2_Different.      (* مختلفان *)
+
+(* البنية التجريدية للجذر *)
+Record RootAbstract := {
+  ra_c2 : ArabicLetter;                (* الحرف المركزي C2 *)
+  ra_c1 : ArabicLetter;                (* C1 قبل المركز *)
+  ra_c3 : ArabicLetter;                (* C3 بعد المركز *)
+  ra_rel_c1_c2_makhraj : MakhrajRelation;  (* علاقة مخرج C1 بـ C2 *)
+  ra_rel_c3_c2_makhraj : MakhrajRelation;  (* علاقة مخرج C3 بـ C2 *)
+  ra_rel_c1_c2_feature : FeatureRelation2;  (* علاقة صفات C1 بـ C2 *)
+  ra_rel_c3_c2_feature : FeatureRelation2   (* علاقة صفات C3 بـ C2 *)
+}.
+
+(* حساب علاقة المخرج من القيم الرقمية *)
+Definition compute_makhraj_relation (v1 v2 : nat) : MakhrajRelation :=
+  let diff := if v1 <=? v2 then v2 - v1 else v1 - v2 in
+  match diff with
+  | 0 => MR_Same
+  | 1 => MR_Near
+  | 2 => MR_Near
+  | 3 => MR_Medium
+  | 4 => MR_Medium
+  | 5 => MR_Medium
+  | _ => MR_Far
+  end.
+
+(* دالة إنشاء الجذر التجريدي *)
+Definition abstract_root (c1 c2 c3 : ArabicLetter) : RootAbstract :=
+  let v1 := letter_value c1 in
+  let v2 := letter_value c2 in
+  let v3 := letter_value c3 in
+  {|
+    ra_c2 := c2;
+    ra_c1 := c1;
+    ra_c3 := c3;
+    ra_rel_c1_c2_makhraj := compute_makhraj_relation v1 v2;
+    ra_rel_c3_c2_makhraj := compute_makhraj_relation v3 v2;
+    ra_rel_c1_c2_feature := FR2_Different;
+    ra_rel_c3_c2_feature := FR2_Different
+  |}.
+
+(* مثال: الجذر ك-ت-ب كبنية تجريدية *)
+Definition root_ktb_abstract := abstract_root L_Kaf L_Ta L_Ba.
+
+(** ========================================================== *)
+(**  Part 38: العُرف - الاستعمال اللغوي                         *)
+(**  اختيار الجذور الحقيقية من الفضاء التجريدي                  *)
+(** ========================================================== *)
+
+(* حالة الجذر في العُرف *)
+Inductive UsageStatus :=
+| US_Used           (* مستعمل فعلاً *)
+| US_Possible       (* ممكن لغوياً لكن غير مستعمل *)
+| US_Impossible.    (* مستحيل صوتياً *)
+
+(* نوع الدلالة الأساسية *)
+Inductive SemanticCategory :=
+| SC_Motion       (* حركة: ذهب، جاء، خرج *)
+| SC_Knowledge    (* معرفة: علم، فهم، قرأ *)
+| SC_Creation     (* إنشاء: كتب، صنع، بنى *)
+| SC_Perception   (* إدراك: سمع، رأى، شمّ *)
+| SC_State        (* حالة: مرض، صحّ، جاع *)
+| SC_Transfer     (* نقل: أعطى، أخذ، باع *)
+| SC_Communication (* تواصل: قال، سأل، أجاب *)
+| SC_Other.       (* أخرى *)
+
+(* سجل العُرف للجذر *)
+Record UsageRecord := {
+  ur_root : RootAbstract;           (* الجذر التجريدي *)
+  ur_status : UsageStatus;          (* حالة الاستعمال *)
+  ur_category : SemanticCategory;   (* الفئة الدلالية *)
+  ur_frequency : nat                (* معدل الاستخدام *)
+}.
+
+(* أمثلة للجذور المستعملة *)
+Definition usage_ktb := {|
+  ur_root := root_ktb_abstract;
+  ur_status := US_Used;
+  ur_category := SC_Creation;
+  ur_frequency := 100
+|}.
+
+Definition usage_3lm := {|
+  ur_root := abstract_root L_Ain L_Lam L_Mim;
+  ur_status := US_Used;
+  ur_category := SC_Knowledge;
+  ur_frequency := 95
+|}.
+
+Definition usage_dhb := {|
+  ur_root := abstract_root L_Dhal L_Ha2 L_Ba;
+  ur_status := US_Used;
+  ur_category := SC_Motion;
+  ur_frequency := 80
+|}.
+
+(** ========================================================== *)
+(**  Part 39: قوالب WordState                                   *)
+(**  توليد الكلمات من الجذر + الحركات + الزوائد                 *)
+(** ========================================================== *)
+
+(* نمط الحركات للكلمة *)
+Record VowelPattern := {
+  vp_v1 : Haraka;   (* حركة بعد C1 *)
+  vp_v2 : Haraka;   (* حركة بعد C2 *)
+  vp_v3 : Haraka    (* حركة بعد C3 *)
+}.
+
+(* قالب الزوائد *)
+Record ExtraPattern := {
+  ep_before_c1 : list ExtraLetter;  (* زوائد قبل C1 *)
+  ep_between_c1_c2 : list ExtraLetter;  (* زوائد بين C1 و C2 *)
+  ep_between_c2_c3 : list ExtraLetter;  (* زوائد بين C2 و C3 *)
+  ep_after_c3 : list ExtraLetter    (* زوائد بعد C3 *)
+}.
+
+(* حالة الكلمة الكاملة *)
+Record WordState := {
+  ws_root : RootAbstract;       (* الجذر التجريدي *)
+  ws_vowels : VowelPattern;     (* نمط الحركات *)
+  ws_extras : ExtraPattern;     (* قالب الزوائد *)
+  ws_features : MorphFeatures;  (* السمات الصرفية *)
+  ws_complexity : nat           (* مؤشر التعقيد الفراكتالي *)
+}.
+
+(* قالب الحركات للفعل الماضي الثلاثي المجرد *)
+Definition vowel_pattern_past_1 := {|
+  vp_v1 := H_Fatha;
+  vp_v2 := H_Fatha;
+  vp_v3 := H_Sukun
+|}.
+
+(* قالب الزوائد للفعل المجرد (بدون زوائد) *)
+Definition extra_pattern_bare := {|
+  ep_before_c1 := [];
+  ep_between_c1_c2 := [];
+  ep_between_c2_c3 := [];
+  ep_after_c3 := []
+|}.
+
+(* قالب الزوائد لـ استفعل *)
+Definition extra_pattern_istaf3ala := {|
+  ep_before_c1 := [EL_Alif; EL_Sin; EL_Ta];
+  ep_between_c1_c2 := [];
+  ep_between_c2_c3 := [];
+  ep_after_c3 := []
+|}.
+
+(* قالب الزوائد لـ مَفْعُول *)
+Definition extra_pattern_maf3ul := {|
+  ep_before_c1 := [EL_Mim];
+  ep_between_c1_c2 := [];
+  ep_between_c2_c3 := [EL_Waw];
+  ep_after_c3 := []
+|}.
+
+(* حساب عدد الزوائد الكلي *)
+Definition count_extras (ep : ExtraPattern) : nat :=
+  length ep.(ep_before_c1) + 
+  length ep.(ep_between_c1_c2) + 
+  length ep.(ep_between_c2_c3) + 
+  length ep.(ep_after_c3).
+
+(* دالة توليد حالة الكلمة *)
+Definition generate_word_state 
+    (root : RootAbstract) 
+    (vowels : VowelPattern) 
+    (extras : ExtraPattern) 
+    (features : MorphFeatures) : WordState :=
+  let n_extras := count_extras extras in
+  let complexity := fib (n_extras + 2) in
+  {|
+    ws_root := root;
+    ws_vowels := vowels;
+    ws_extras := extras;
+    ws_features := features;
+    ws_complexity := complexity
+  |}.
+
+(* السمات الافتراضية *)
+Definition default_features := {|
+  mf_number := GN_Singular;
+  mf_gender := GG_Masculine;
+  mf_person := GP_Third;
+  mf_definiteness := Def_Indefinite
+|}.
+
+(* أمثلة: توليد كلمات من الجذر ك-ت-ب *)
+
+(* كَتَبَ - فعل ماضي مجرد *)
+Definition word_kataba := generate_word_state 
+  root_ktb_abstract 
+  vowel_pattern_past_1 
+  extra_pattern_bare 
+  default_features.
+
+(* استكتب - فعل طلب *)
+Definition word_istaktaba := generate_word_state 
+  root_ktb_abstract 
+  vowel_pattern_past_1 
+  extra_pattern_istaf3ala 
+  default_features.
+
+(* مكتوب - اسم مفعول *)
+Definition word_maktub := generate_word_state 
+  root_ktb_abstract 
+  {| vp_v1 := H_Sukun; vp_v2 := H_Damma; vp_v3 := H_Sukun |}
+  extra_pattern_maf3ul 
+  default_features.
+
+(** ========================================================== *)
+(**  Part 40: الإثباتات والعلاقات                               *)
+(**  التحقق من خصائص النموذج التوليدي                          *)
+(** ========================================================== *)
+
+(* إثبات: الفعل المجرد له تعقيد = 1 *)
+Lemma bare_verb_complexity_is_1 :
+  ws_complexity word_kataba = 1.
+Proof. reflexivity. Qed.
+
+(* إثبات: استفعل له تعقيد = Fib(5) = 5 *)
+Lemma istaf3ala_complexity :
+  ws_complexity word_istaktaba = fib 5.
+Proof. reflexivity. Qed.
+
+(* إثبات: مفعول له تعقيد = Fib(4) = 3 *)
+Lemma maf3ul_complexity :
+  ws_complexity word_maktub = fib 4.
+Proof. reflexivity. Qed.
+
+(* إثبات: التعقيد يزداد مع عدد الزوائد *)
+Lemma complexity_increases_with_extras_gen :
+  ws_complexity word_kataba < ws_complexity word_maktub.
+Proof. simpl. auto. Qed.
+
+(* إثبات: استفعل أكثر تعقيداً من مفعول *)
+Lemma istaf3ala_more_complex_than_maf3ul :
+  ws_complexity word_maktub < ws_complexity word_istaktaba.
+Proof. simpl. auto. Qed.
+
+(** ========================================================== *)
+(**  ملخص Parts 37-40: النموذج التوليدي الكامل                  *)
+(** ========================================================== *)
+
+(*
+   الآن لدينا نموذج توليدي متكامل من ثلاث طبقات:
+
+   1. **RootAbstract** (Part 37):
+      - الجذر كبنية تجريدية: (C₂ المركز، علاقة C₁، علاقة C₃)
+      - علاقات المخرج والصفات بين الحروف
+      - دالة abstract_root تُنشئ الجذر التجريدي
+
+   2. **العُرف / UsageRecord** (Part 38):
+      - اختيار الجذور المستعملة من الفضاء التجريدي
+      - تحديد الفئة الدلالية (حركة، معرفة، إنشاء...)
+      - تحديد معدل الاستخدام
+
+   3. **WordState** (Part 39):
+      - الحالة الكاملة للكلمة المُولَّدة
+      - الجذر + نمط الحركات + قالب الزوائد + السمات
+      - حساب التعقيد الفراكتالي
+
+   4. **الإثباتات** (Part 40):
+      - التحقق من أن التعقيد يزداد مع الزوائد
+      - التحقق من قيم التعقيد للأوزان المختلفة
+
+   سلسلة التوليد:
+   ---------------
+   (C₁, C₂, C₃) → RootAbstract → [العُرف] → UsageRecord
+                                           ↓
+                               (VowelPattern, ExtraPattern, Features)
+                                           ↓
+                                       WordState
+                                           ↓
+                                    الكلمة المُولَّدة
+*)
+
 End AGT_Mathematical.
