@@ -20,7 +20,7 @@ This document provides a comprehensive framework for Arabic augmented verb forms
 | **MP_Ifta3ala** | اِفْتَعَلَ | اِفْتِعَال | Acquisition, Self-involvement |
 | **MP_If3alla** | اِفْعَلَّ | اِفْعِلَال | Color/Defect (specialized) |
 | **MP_Istaf3ala** | اِسْتَفْعَلَ | اِسْتِفْعَال | Request, Seeking, Consideration |
-| **MP_If3aw3ala** | اِفْعَوْعَلَ | اِفْعِيعَال | Quadriliteral pattern |
+
 
 ---
 
