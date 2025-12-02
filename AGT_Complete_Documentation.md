@@ -29,7 +29,7 @@ The system processes Arabic text through multiple layers:
 
 ##### Layer 1: Phonetic Foundation (الأساس الصوتي)
 - **Phonemes Engine** (`phonemes_engine.py`): Handles basic phonetic units (consonants, vowels)
-- **Harakat Engine** (`harakat_engine.py` / `حركات`): Processes diacritical marks (فتحة، ضمة، كسرة، etc.)
+- **Harakat/Diacritics**: Processes diacritical marks (فتحة، ضمة، كسرة, etc.)
 - **Sound Engine** (`sound_engine.py`): Manages sound-related data
 
 ##### Layer 2: Particles & Tools (الأدوات والحروف)
@@ -50,12 +50,10 @@ Processing grammatical particles including:
 Including 40+ noun-related engines:
 
 **Basic Noun Categories:**
-- Definiteness (`definiteness_engine.py`)
 - Demonstratives (`demonstratives_engine.py`)
-- Pronouns (`pronouns_engine.py`)
-- Numbers (`adad_engine.py`, `adad_names_engine.py`)
-- Dual & Plural forms (`number_gender_suffixes_engine.py`)
-- Broken plurals (`brokenplural_templates_engine.py`)
+- Number names (`adad_names_engine.py`)
+- Gender and number forms
+- Definiteness and indefiniteness
 
 **Derived Forms (المشتقات):**
 - Active participle (`active_participle_engine.py`) - اسم الفاعل
