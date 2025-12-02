@@ -64,6 +64,10 @@ Including 40+ noun-related engines:
 - Diminutive forms (`tasgheer_engine.py`) - التصغير
 - Relative adjectives (`nisba_engine.py`) - النسب
 - Synthetic/Derived source (`masdar_sinai_engine.py`) - المصدر الصناعي
+- **Enhanced Masdar Semantic Analysis** (`masdar_semantic_enhanced_engine.py`) - نظام التحليل الدلالي للمصادر
+  - Phonetic-semantic mapping of verbal nouns
+  - 7 semantic domains: Physical, Dynamic, Cognitive, Emotional, Social, Task, Existential
+  - Pattern-domain correlation with feature vectors
 - Exaggeration forms (`mubalagh_sigha_engine.py`) - صيغ المبالغة
 - Instance nouns (`ism_marra_engine.py`) - اسم المرة
 - State nouns (`ism_hay_a_engine.py`) - اسم الهيئة
@@ -255,3 +259,55 @@ This AGT_Complete system can be used for:
 ## Conclusion
 
 AGT_Complete represents a comprehensive Arabic Grammar Technology framework that systematically processes and generates Arabic grammatical data across all linguistic levels—from individual phonemes to complete sentences, with full rhetorical device support. The modular architecture allows easy extension and maintenance while ensuring data consistency through centralized reconstruction utilities.
+
+---
+
+## Advanced Feature: Masdar Semantic Analysis System
+
+### Phonetic-Semantic Mapping Framework
+
+A specialized subsystem has been developed for deep semantic analysis of Arabic verbal nouns (مصادر). This framework represents a transformation from traditional morphological analysis to **knowledge engineering**.
+
+#### Key Components:
+
+1. **Masdar_Semantic_Analysis.md** - Comprehensive theoretical framework:
+   - 7 layered semantic domains (Physical, Dynamic, Cognitive, Emotional, Social, Task, Existential)
+   - Phonetic-semantic correlation theory (vowel patterns → semantic tendencies)
+   - Complete pattern-domain mapping tables
+   - Machine-ready JSON schemas and Python type definitions
+
+2. **masdar_semantic_enhanced_engine.py** - Implementation engines:
+   - `MasdarSemanticEngine`: 20+ entries with full semantic classification
+   - `MasdarPatternDomainEngine`: Reference table for pattern-domain mappings
+   - Each entry includes semantic feature vectors (physicality, cognition, emotion, etc.)
+
+#### The Golden Rule:
+
+Arabic morphological patterns encode semantic information through vowel movements:
+- **Kasra (كسرة) in verb middle** → Cognitive/Emotional domains
+- **Damma (ضمة) in verb middle** → Stable attributes/states  
+- **Fatha (فتحة) in verb middle** → Physical/general events
+
+#### Example Analysis:
+
+```
+قَتْل (killing) - Pattern: فَعْل
+  Domain: Physical
+  Features: physicality=1.0, agent_force=0.9, patient_effect=1.0
+
+عِلْم (knowledge) - Pattern: فِعْل  
+  Domain: Cognitive
+  Features: cognition=1.0, physicality=0.0, abstraction=1.0
+
+قِتَال (fighting) - Pattern: فِعَال
+  Domain: Social/Interaction
+  Features: social_interaction=1.0, reciprocity=1.0, conflict=0.9
+```
+
+This system enables:
+- Automatic semantic classification of Arabic مصادر
+- Predictive modeling based on phonetic patterns
+- Deep semantic NLP applications
+- Computational lexicography with fine-grained annotations
+
+See **Masdar_Semantic_Analysis.md** for complete documentation.
