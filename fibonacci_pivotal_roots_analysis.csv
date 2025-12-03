@@ -1,0 +1,8 @@
+Segment_Number,Segment_Name,Start_Verse,End_Verse,Length,Fibonacci_Approx,Total_Roots,Unique_Roots,Density,Top_Root_1,Top_Root_1_Count,Top_Root_2,Top_Root_2_Count,Top_Root_3,Top_Root_3_Count
+1,Opening - The Event,1,6,6,5,6,4,1.000,وقع,3,خفض,1,رجج,1
+2,Three Groups Introduced,7,14,8,8,2,2,0.250,يمن,1,شمل,1,,0
+3,The Foremost/السابقون,15,26,12,13,1,1,0.083,سلم,1,,0,,0
+4,People of Right Hand - Paradise,27,40,14,13,6,3,0.429,يمن,4,ظلل,1,نشأ,1
+5,People of Left Hand - Hell,41,56,16,13,5,4,0.312,حمم,2,كرم,1,نزل,1
+6,Divine Signs - Creation,57,74,18,21,2,2,0.111,خلق,1,موت,1,,0
+7,Revelation & Conclusion,75,96,22,21,12,8,0.545,يمن,4,روح,2,حمم,1
