@@ -202,7 +202,7 @@ def sample_specs()->List[VerbSpec]:
 
 def main()->None:
     ap=argparse.ArgumentParser(description="Vocalized Form I engine (14 forms × past/pres/juss/imp)")
-    ap.add_argument("--sample-csv", type=str, default="", help="export CSV for 10+ sample verbs")
+    ap.add_argument("--sample-csv", type=str, default="", help="export CSV for 14 sample verbs")
     ap.add_argument("--lemma", type=str, default="", help="export CSV for a specific lemma in lexicon")
     ap.add_argument("--csv", type=str, default="", help="output CSV path when --lemma is used")
     args=ap.parse_args()
