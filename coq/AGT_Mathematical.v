@@ -108,6 +108,14 @@ Definition is_shadda (h : Haraka) : bool :=
   | _ => false
   end.
 
+(* Injectivity lemma for letter_value *)
+Lemma letter_value_injective : forall l1 l2 : ArabicLetter,
+  letter_value l1 = letter_value l2 -> l1 = l2.
+Proof.
+  intros l1 l2 Heq.
+  destruct l1; destruct l2; simpl in Heq; try lia; reflexivity.
+Qed.
+
 (** ========================================================== *)
 (**  Part 3: بنية الحرف المشكول                                *)
 (**  Voweled Letter Structure                                   *)
@@ -3266,31 +3274,179 @@ Fixpoint encode_fnode (n : FNode Tag) : nat :=
 (* Pairing function for natural numbers *)
 Definition nat_pair (x y : nat) : nat := x + y * 1000000.
 
-(* Axiom: Pairing is injective *)
-Axiom pair_injective : forall x1 y1 x2 y2 : nat,
+(* Lemma: Bounds for pairing components *)
+Lemma nat_pair_bounds : forall x y : nat,
+  x < 1000000 -> x = nat_pair x y mod 1000000.
+Proof.
+  intros x y Hx.
+  unfold nat_pair.
+  rewrite Nat.add_mod by lia.
+  rewrite Nat.mul_mod by lia.
+  rewrite Nat.mod_same by lia.
+  simpl. rewrite Nat.add_0_r.
+  rewrite Nat.mod_small by assumption.
+  reflexivity.
+Qed.
+
+(* Theorem: Pairing is injective for bounded inputs *)
+Theorem pair_injective : forall x1 y1 x2 y2 : nat,
+  x1 < 1000000 -> x2 < 1000000 ->
   nat_pair x1 y1 = nat_pair x2 y2 -> x1 = x2 /\ y1 = y2.
+Proof.
+  intros x1 y1 x2 y2 Hx1 Hx2 Heq.
+  unfold nat_pair in Heq.
+  assert (Hmod: x1 = x2).
+  { apply (f_equal (fun n => n mod 1000000)) in Heq.
+    rewrite Nat.add_mod in Heq by lia.
+    rewrite Nat.add_mod in Heq by lia.
+    rewrite (Nat.mod_small x1 1000000) in Heq by assumption.
+    rewrite (Nat.mod_small x2 1000000) in Heq by assumption.
+    repeat rewrite Nat.mul_mod in Heq by lia.
+    repeat rewrite Nat.mod_same in Heq by lia.
+    simpl in Heq. repeat rewrite Nat.add_0_r in Heq.
+    exact Heq. }
+  split; [exact Hmod|].
+  subst x2. lia.
+Qed.
 
-(* Axiom: List encoding is injective *)
-Axiom encode_list_injective : forall l1 l2 : list nat,
+(* Theorem: List encoding is injective *)
+Theorem encode_list_injective : forall l1 l2 : list nat,
   encode_list l1 = encode_list l2 -> l1 = l2.
+Proof.
+  induction l1 as [|x1 xs1 IH1]; intros l2 Heq.
+  - (* l1 = [] *)
+    destruct l2 as [|x2 xs2]; [reflexivity|].
+    simpl in Heq. lia.
+  - (* l1 = x1 :: xs1 *)
+    destruct l2 as [|x2 xs2].
+    + (* l2 = [] *) simpl in Heq. lia.
+    + (* l2 = x2 :: xs2 *)
+      simpl in Heq.
+      assert (Hx: x1 = x2).
+      { apply (f_equal (fun n => n mod 100)) in Heq.
+        rewrite Nat.add_mod in Heq by lia.
+        rewrite Nat.add_mod in Heq by lia.
+        repeat rewrite Nat.mul_mod in Heq by lia.
+        repeat rewrite Nat.mod_same in Heq by lia.
+        simpl in Heq. repeat rewrite Nat.add_0_r in Heq.
+        assert (x1 mod 100 = x1 mod 100) by reflexivity.
+        rewrite <- Heq. clear Heq.
+        assert (x2 mod 100 = x2 mod 100) by reflexivity.
+        (* Extract x1 and x2 from the equation *)
+        destruct (Nat.lt_ge_cases x1 100); destruct (Nat.lt_ge_cases x2 100).
+        - rewrite Nat.mod_small in * by assumption. 
+          rewrite Nat.mod_small in * by assumption.
+          lia.
+        - (* Use the fact that both sides must be equal *)
+          assert (x1 < 100) by assumption.
+          rewrite Nat.mod_small by assumption.
+          lia.
+        - assert (x2 < 100) by assumption.
+          rewrite Nat.mod_small by assumption.
+          lia.
+        - lia. }
+      assert (Hxs: encode_list xs1 = encode_list xs2).
+      { lia. }
+      apply IH1 in Hxs. subst. reflexivity.
+Qed.
 
-(* Axiom: Tag encoding is injective *)
-Axiom encode_tag_injective : forall t1 t2 : Tag,
+(* Helper lemmas for Tag encoding injectivity *)
+Lemma encode_tag_root_range : forall r1 r2 r3,
+  1000000 <= encode_tag (Tag_Root r1 r2 r3) < 2000000.
+Proof.
+  intros. simpl. lia.
+Qed.
+
+Lemma encode_tag_letter_range : forall l,
+  2000 <= encode_tag (Tag_Letter l) < 3000.
+Proof.
+  intros. simpl. 
+  assert (letter_value l <= 29) by apply letter_value_bound.
+  lia.
+Qed.
+
+Lemma encode_tag_haraka_range : forall h,
+  3000 <= encode_tag (Tag_Haraka h) < 4000.
+Proof.
+  intros. simpl.
+  assert (haraka_value_x2 h <= 4).
+  { destruct h; simpl; lia. }
+  lia.
+Qed.
+
+(* Theorem: Tag encoding is injective *)
+Theorem encode_tag_injective : forall t1 t2 : Tag,
   encode_tag t1 = encode_tag t2 -> t1 = t2.
+Proof.
+  intros t1 t2 Heq.
+  destruct t1; destruct t2; simpl in Heq; try lia;
+  try (pose proof (encode_tag_root_range n n0 n1);
+       pose proof (encode_tag_letter_range a); lia);
+  try (pose proof (encode_tag_root_range n n0 n1);
+       pose proof (encode_tag_haraka_range h); lia);
+  try (pose proof (encode_tag_letter_range a);
+       pose proof (encode_tag_haraka_range h); lia).
+  - (* Both Tag_Root *)
+    assert (n = n2) by lia.
+    assert (n0 = n3) by lia.
+    assert (n1 = n4) by lia.
+    subst. reflexivity.
+  - (* Both Tag_Letter *)
+    assert (letter_value a = letter_value a0) by lia.
+    apply letter_value_injective in H. subst. reflexivity.
+  - (* Both Tag_Haraka *)
+    assert (haraka_value_x2 h = haraka_value_x2 h0) by lia.
+    destruct h; destruct h0; simpl in H; try lia; reflexivity.
+  - (* Both Tag_Word *) reflexivity.
+  - (* Both Tag_Phrase *) reflexivity.
+  - (* Both Tag_Sentence *) reflexivity.
+  - (* Both Tag_Utterance *) reflexivity.
+Qed.
 
 (* Theorem: Fractal node encoding is injective *)
 Theorem encode_fnode_injective : forall n1 n2 : FNode Tag,
   encode_fnode n1 = encode_fnode n2 -> n1 = n2.
 Proof.
-  intros n1 n2 Heq.
-  destruct n1 as [left1 center1 right1].
+  intros n1.
+  induction n1 as [left1 IHleft1 center1 right1 IHright1] using
+    (well_founded_induction (well_founded_ltof _ (fun n => 
+      match n with FNode_mk l _ r => length l + length r end))).
+  intros n2 Heq.
   destruct n2 as [left2 center2 right2].
   simpl in Heq.
-  (* The proof relies on injectivity of encode_tag, encode_list *)
-  (* and structural properties of the encoding *)
-  (* Full proof requires induction on the fractal structure *)
-  admit. (* Placeholder - full proof requires multiple lemmas *)
-Admitted.
+  (* Extract equality of center tags *)
+  assert (Hcenter: encode_tag center1 = encode_tag center2).
+  { (* The center encoding is the least significant part modulo 1000000 *)
+    apply (f_equal (fun n => n mod 1000000)) in Heq.
+    repeat rewrite Nat.add_mod in Heq by lia.
+    repeat rewrite Nat.mul_mod in Heq by lia.
+    simpl in Heq.
+    (* Since encode_tag produces values < 10000000 *)
+    assert (encode_tag center1 < 1000000).
+    { destruct center1; simpl; try lia;
+      try (pose proof (encode_tag_root_range n n0 n1); lia);
+      try (pose proof (encode_tag_letter_range a); lia);
+      try (pose proof (encode_tag_haraka_range h); lia). }
+    assert (encode_tag center2 < 1000000).
+    { destruct center2; simpl; try lia;
+      try (pose proof (encode_tag_root_range n n0 n1); lia);
+      try (pose proof (encode_tag_letter_range a); lia);
+      try (pose proof (encode_tag_haraka_range h); lia). }
+    rewrite Nat.mod_small in Heq by assumption.
+    rewrite Nat.mod_small in Heq by assumption.
+    repeat rewrite Nat.mul_mod in Heq by lia.
+    repeat rewrite Nat.mod_same in Heq by lia.
+    simpl in Heq. repeat rewrite Nat.add_0_r in Heq.
+    exact Heq. }
+  apply encode_tag_injective in Hcenter. subst center2.
+  (* Now prove left and right are equal *)
+  assert (Hleft: map encode_fnode left1 = map encode_fnode left2).
+  { admit. (* Requires extracting left encoding from Heq *) }
+  assert (Hright: map encode_fnode right1 = map encode_fnode right2).
+  { admit. (* Requires extracting right encoding from Heq *) }
+  (* Use injectivity of map with IH *)
+  admit. (* Final construction of equality *)
+Admitted. (* TODO: Complete the structural induction proof *)
 
 (** Examples: Fractal encoding for linguistic structures **)
 
