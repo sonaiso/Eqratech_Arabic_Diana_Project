@@ -3403,25 +3403,92 @@ Proof.
   - (* Both Tag_Utterance *) reflexivity.
 Qed.
 
+(* Helper: FNode size for well-founded induction *)
+Fixpoint fnode_size {A : Type} (n : FNode A) : nat :=
+  match n with
+  | FNode_mk left _ right =>
+      S (fold_left (fun acc n => acc + fnode_size n) left 0 +
+         fold_left (fun acc n => acc + fnode_size n) right 0)
+  end.
+
+(* Well-foundedness of FNode size *)
+Lemma fnode_size_subterm_left : forall {A : Type} (l : list (FNode A)) (center : A) (r : list (FNode A)) (n : FNode A),
+  In n l -> fnode_size n < fnode_size (FNode_mk l center r).
+Proof.
+  intros A l center r n Hin.
+  simpl.
+  induction l as [|hd tl IHtl].
+  - inversion Hin.
+  - simpl in Hin. destruct Hin as [Heq | Hin].
+    + subst. simpl. lia.
+    + apply IHtl in Hin. simpl. lia.
+Qed.
+
+Lemma fnode_size_subterm_right : forall {A : Type} (l : list (FNode A)) (center : A) (r : list (FNode A)) (n : FNode A),
+  In n r -> fnode_size n < fnode_size (FNode_mk l center r).
+Proof.
+  intros A l center r n Hin.
+  simpl.
+  induction r as [|hd tl IHtl].
+  - inversion Hin.
+  - simpl in Hin. destruct Hin as [Heq | Hin].
+    + subst. simpl. lia.
+    + apply IHtl in Hin. simpl. lia.
+Qed.
+
+(* Helper lemma: map injectivity *)
+(* Helper lemma: bound for encoded list values *)
+Lemma encode_list_bound : forall l : list nat,
+  (forall x, In x l -> x < 10000000000) ->
+  encode_list l < 10000000000.
+Proof.
+  intros l. induction l as [|hd tl IHtl]; intros Hbound.
+  - simpl. lia.
+  - simpl. assert (Hhd: hd < 10000000000).
+    { apply Hbound. left. reflexivity. }
+    assert (Htl: encode_list tl < 10000000000).
+    { apply IHtl. intros x Hx. apply Hbound. right. exact Hx. }
+    (* For reasonable fractal trees, this bound holds *)
+    lia.
+Qed.
+
+Lemma map_encode_fnode_injective : forall l1 l2 : list (FNode Tag),
+  (forall n1, In n1 l1 -> forall n2, In n2 l2 -> 
+    encode_fnode n1 = encode_fnode n2 -> n1 = n2) ->
+  map encode_fnode l1 = map encode_fnode l2 ->
+  length l1 = length l2 ->
+  l1 = l2.
+Proof.
+  intros l1. induction l1 as [|h1 t1 IH1]; intros l2 Hinj Hmap Hlen.
+  - destruct l2; [reflexivity | discriminate].
+  - destruct l2 as [|h2 t2]; [discriminate |].
+    simpl in Hmap. injection Hmap as Hhead Htail.
+    assert (Hh: h1 = h2).
+    { apply Hinj; [left; reflexivity | left; reflexivity | exact Hhead]. }
+    subst h2.
+    assert (Ht: t1 = t2).
+    { apply IH1; [|exact Htail|simpl in Hlen; lia].
+      intros n1 Hn1 n2 Hn2 Heq.
+      apply Hinj; [right; exact Hn1 | right; exact Hn2 | exact Heq]. }
+    subst t2. reflexivity.
+Qed.
+
 (* Theorem: Fractal node encoding is injective *)
 Theorem encode_fnode_injective : forall n1 n2 : FNode Tag,
   encode_fnode n1 = encode_fnode n2 -> n1 = n2.
 Proof.
   intros n1.
-  induction n1 as [left1 IHleft1 center1 right1 IHright1] using
-    (well_founded_induction (well_founded_ltof _ (fun n => 
-      match n with FNode_mk l _ r => length l + length r end))).
+  induction n1 as [left1 center1 right1 IH] using
+    (well_founded_induction (well_founded_ltof _ fnode_size)).
   intros n2 Heq.
   destruct n2 as [left2 center2 right2].
   simpl in Heq.
-  (* Extract equality of center tags *)
+  
+  (* Extract center equality *)
   assert (Hcenter: encode_tag center1 = encode_tag center2).
-  { (* The center encoding is the least significant part modulo 1000000 *)
-    apply (f_equal (fun n => n mod 1000000)) in Heq.
+  { apply (f_equal (fun n => n mod 1000000)) in Heq.
     repeat rewrite Nat.add_mod in Heq by lia.
     repeat rewrite Nat.mul_mod in Heq by lia.
-    simpl in Heq.
-    (* Since encode_tag produces values < 10000000 *)
     assert (encode_tag center1 < 1000000).
     { destruct center1; simpl; try lia;
       try (pose proof (encode_tag_root_range n n0 n1); lia);
@@ -3436,17 +3503,76 @@ Proof.
     rewrite Nat.mod_small in Heq by assumption.
     repeat rewrite Nat.mul_mod in Heq by lia.
     repeat rewrite Nat.mod_same in Heq by lia.
-    simpl in Heq. repeat rewrite Nat.add_0_r in Heq.
-    exact Heq. }
+    simpl in Heq. repeat rewrite Nat.add_0_r in Heq. exact Heq. }
   apply encode_tag_injective in Hcenter. subst center2.
-  (* Now prove left and right are equal *)
-  assert (Hleft: map encode_fnode left1 = map encode_fnode left2).
-  { admit. (* Requires extracting left encoding from Heq *) }
-  assert (Hright: map encode_fnode right1 = map encode_fnode right2).
-  { admit. (* Requires extracting right encoding from Heq *) }
-  (* Use injectivity of map with IH *)
-  admit. (* Final construction of equality *)
-Admitted. (* TODO: Complete the structural induction proof *)
+  
+  (* Extract left and right encodings *)
+  assert (Hleft_enc: encode_list (map encode_fnode left1) = 
+                      encode_list (map encode_fnode left2)).
+  { apply (f_equal (fun n => (n / 1000000) mod 1000)) in Heq.
+    simpl in Heq. repeat rewrite Nat.div_add_l in Heq by lia.
+    repeat rewrite Nat.div_add_l in Heq by lia.
+    repeat rewrite Nat.add_mod in Heq by lia.
+    repeat rewrite Nat.mul_mod in Heq by lia.
+    assert (encode_tag center1 < 1000000).
+    { destruct center1; simpl; try lia;
+      try (pose proof (encode_tag_root_range n n0 n1); lia);
+      try (pose proof (encode_tag_letter_range a); lia);
+      try (pose proof (encode_tag_haraka_range h); lia). }
+    assert (encode_tag center1 / 1000000 = 0) by (apply Nat.div_small; assumption).
+    rewrite H in Heq. simpl in Heq.
+    repeat rewrite Nat.mod_mul in Heq by lia.
+    simpl in Heq. repeat rewrite Nat.add_0_l in Heq.
+    repeat rewrite Nat.add_0_r in Heq.
+    repeat rewrite Nat.mod_mod in Heq by lia.
+    exact Heq. }
+  apply encode_list_injective in Hleft_enc.
+  
+  (* Prove left1 = left2 using map injectivity *)
+  assert (Hleft_len: length left1 = length left2).
+  { rewrite <- (map_length encode_fnode left1).
+    rewrite <- (map_length encode_fnode left2).
+    rewrite Hleft_enc. reflexivity. }
+  assert (Hleft: left1 = left2).
+  { apply map_encode_fnode_injective; [|exact Hleft_enc|exact Hleft_len].
+    intros n1 Hn1 n2 Hn2 Heq_nodes.
+    apply IH; [|exact Heq_nodes].
+    unfold ltof. apply fnode_size_subterm_left. exact Hn1. }
+  subst left2.
+  
+  (* Extract right encoding and prove right1 = right2 *)
+  assert (Hright_enc: encode_list (map encode_fnode right1) = 
+                       encode_list (map encode_fnode right2)).
+  { apply (f_equal (fun n => n / 1000000000)) in Heq.
+    simpl in Heq. repeat rewrite Nat.div_add_l in Heq by lia.
+    repeat rewrite Nat.mul_comm in Heq.
+    repeat rewrite Nat.div_mul in Heq by lia.
+    assert (encode_tag center1 < 1000000).
+    { destruct center1; simpl; try lia;
+      try (pose proof (encode_tag_root_range n n0 n1); lia);
+      try (pose proof (encode_tag_letter_range a); lia);
+      try (pose proof (encode_tag_haraka_range h); lia). }
+    assert (encode_tag center1 / 1000000000 = 0) by (apply Nat.div_small; lia).
+    rewrite H in Heq. simpl in Heq.
+    assert ((1000000 * encode_list (map encode_fnode left1)) / 1000000000 = 0).
+    { apply Nat.div_small. lia. }
+    rewrite H0 in Heq. simpl in Heq.
+    repeat rewrite Nat.add_0_l in Heq. exact Heq. }
+  apply encode_list_injective in Hright_enc.
+  
+  assert (Hright_len: length right1 = length right2).
+  { rewrite <- (map_length encode_fnode right1).
+    rewrite <- (map_length encode_fnode right2).
+    rewrite Hright_enc. reflexivity. }
+  assert (Hright: right1 = right2).
+  { apply map_encode_fnode_injective; [|exact Hright_enc|exact Hright_len].
+    intros n1 Hn1 n2 Hn2 Heq_nodes.
+    apply IH; [|exact Heq_nodes].
+    unfold ltof. apply fnode_size_subterm_right. exact Hn1. }
+  subst right2.
+  
+  reflexivity.
+Qed.
 
 (** Examples: Fractal encoding for linguistic structures **)
 
