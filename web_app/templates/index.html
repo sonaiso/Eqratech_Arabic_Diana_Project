@@ -41,6 +41,10 @@
             font-size: 1.2em;
         }
         
+        .date-container {
+            text-align: center;
+        }
+        
         .date-badge {
             display: inline-block;
             background: #667eea;
@@ -62,6 +66,11 @@
         .stats h2 {
             color: #667eea;
             font-size: 2em;
+        }
+        
+        .section-title {
+            margin-bottom: 20px;
+            color: #333;
         }
         
         .activities-grid {
@@ -134,7 +143,7 @@
         <h1>🎓 Eqratech Arabic Diana Project</h1>
         <p class="subtitle">مشروع ديانا العربية لتقنية القراءة</p>
         
-        <div style="text-align: center;">
+        <div class="date-container">
             <span class="date-badge">📅 Today: {{ today }}</span>
         </div>
         
@@ -143,15 +152,15 @@
             <p>Available Grammar Activities Today</p>
         </div>
         
-        <h2 style="margin-bottom: 20px; color: #333;">🔧 Available Arabic Grammar Engines:</h2>
+        <h2 class="section-title">🔧 Available Arabic Grammar Engines:</h2>
         
         <div class="activities-grid">
             {% for activity in activities %}
-            <div class="activity-card">
-                <div class="activity-name">{{ activity.name }}</div>
+            <article class="activity-card" role="article" aria-label="{{ activity.name }}">
+                <h3 class="activity-name">{{ activity.name }}</h3>
                 <div class="activity-sheet">{{ activity.sheet_name }}</div>
                 <div class="activity-module">{{ activity.module }}</div>
-            </div>
+            </article>
             {% endfor %}
         </div>
         
