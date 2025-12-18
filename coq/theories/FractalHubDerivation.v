@@ -4,8 +4,8 @@
     It builds upon the specifications and gate operations to prove system properties.
 *)
 
-Require Import FractalHubSpec.
-Require Import FractalHubGates.
+Require Import FractalHub.FractalHubSpec.
+Require Import FractalHub.FractalHubGates.
 
 (** ** Derivation Rules *)
 

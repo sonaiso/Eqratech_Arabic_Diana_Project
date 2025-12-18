@@ -4,7 +4,7 @@
     Gates control the flow of data and state transitions between hubs.
 *)
 
-Require Import FractalHubSpec.
+Require Import FractalHub.FractalHubSpec.
 
 (** ** Gate Types *)
 
