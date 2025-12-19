@@ -11,6 +11,12 @@ build/
 # Graph engine outputs
 *_audit.json
 graph.json
+proposition.json
+*_graph.json
+
+# Pytest cache
+.pytest_cache/
+*.pyc
 
 # Coq compiled files
 *.vo

@@ -239,83 +239,34 @@ class GraphEngine:
             self.audit_trail.append(audit)
             return False, audit
         
-        # Check preconditions
-        preconditions_met = []
-        if 'preconditions' in operator:
-            for precond in operator['preconditions']:
-                # Simplified precondition checking
-                if precond == "gate_authorization_required":
-                    if gate_id and self.gates_authorized.get(gate_id, False):
-                        preconditions_met.append(f"gate_authorization: {gate_id}")
-                    elif self.config['parameters']['gate_policies'].get('require_authorization', True):
-                        error_msg = f"Gate authorization required but not provided"
-                        print(f"✗ {error_msg}")
-                        audit = AuditEntry(
-                            operation_id=operation_id,
-                            timestamp=timestamp,
-                            operator_name=operator_name,
-                            source_node_id=source_node_id,
-                            target_node_id=target_node_id,
-                            space=space,
-                            status=OperationStatus.FAILURE,
-                            error_message=error_msg
-                        )
-                        self.audit_trail.append(audit)
-                        return False, audit
-                else:
-                    preconditions_met.append(precond)
+        # Use the new validation method
+        can_apply, preconditions_met, constraints_checked = self.validate_operator_application(
+            operator_name, operator, source_node, target_node, gate_id, exception_id
+        )
         
-        # Check constraints
-        constraints_checked = []
-        if 'constraints' in operator:
-            for constraint in operator['constraints']:
-                constraint_result = {
-                    'name': constraint['name'],
-                    'passed': True,
-                    'message': ''
-                }
-                
-                # Example: CC cluster check
-                if constraint['name'] == 'no_cc_cluster':
-                    if source_node and target_node:
-                        # Check if CC cluster exists
-                        src_cons = source_node.get_attribute('consonant_code', 0)
-                        tgt_cons = target_node.get_attribute('consonant_code', 0)
-                        src_vowel = source_node.get_attribute('vowel_code', 0)
-                        tgt_vowel = target_node.get_attribute('vowel_code', 0)
-                        
-                        is_cc_cluster = (
-                            src_cons != 0 and tgt_cons != 0 and
-                            src_vowel in [0, 1] and tgt_vowel in [0, 1]
-                        )
-                        
-                        if is_cc_cluster:
-                            if exception_id and self.exceptions_declared.get(exception_id, False):
-                                constraint_result['passed'] = True
-                                constraint_result['message'] = f"CC cluster allowed by exception {exception_id}"
-                            else:
-                                constraint_result['passed'] = False
-                                constraint_result['message'] = "CC cluster detected without exception"
-                
-                constraints_checked.append(constraint_result)
-                
-                if not constraint_result['passed']:
-                    error_msg = f"Constraint '{constraint['name']}' failed: {constraint_result['message']}"
-                    print(f"✗ {error_msg}")
-                    audit = AuditEntry(
-                        operation_id=operation_id,
-                        timestamp=timestamp,
-                        operator_name=operator_name,
-                        source_node_id=source_node_id,
-                        target_node_id=target_node_id,
-                        space=space,
-                        status=OperationStatus.FAILURE,
-                        preconditions_met=preconditions_met,
-                        constraints_checked=constraints_checked,
-                        error_message=error_msg
-                    )
-                    self.audit_trail.append(audit)
-                    return False, audit
+        if not can_apply:
+            # Find the failed constraint/precondition
+            error_msg = "Validation failed"
+            if constraints_checked:
+                failed = [c for c in constraints_checked if not c['passed']]
+                if failed:
+                    error_msg = f"Constraint '{failed[0]['name']}' failed: {failed[0]['message']}"
+            
+            print(f"✗ {error_msg}")
+            audit = AuditEntry(
+                operation_id=operation_id,
+                timestamp=timestamp,
+                operator_name=operator_name,
+                source_node_id=source_node_id,
+                target_node_id=target_node_id,
+                space=space,
+                status=OperationStatus.FAILURE,
+                preconditions_met=preconditions_met,
+                constraints_checked=constraints_checked,
+                error_message=error_msg
+            )
+            self.audit_trail.append(audit)
+            return False, audit
         
         # Apply effects
         effects_applied = []
@@ -406,6 +357,182 @@ class GraphEngine:
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(graph_data, f, indent=2, ensure_ascii=False)
         print(f"✓ Exported graph to {filename}")
+    
+    def check_bridge_exists(self, source_id: str, target_id: str) -> Tuple[bool, float]:
+        """
+        Check if a bridge edge exists between source and target nodes
+        
+        Returns:
+            Tuple of (exists, strength)
+        """
+        # Check if there's a bridge node connecting these nodes
+        for node in self.nodes.values():
+            if node.node_type == 'bridge':
+                if (node.get_attribute('source_id') == source_id and 
+                    node.get_attribute('target_id') == target_id):
+                    strength = node.get_attribute('bridge_strength', 0.0)
+                    return True, strength
+        
+        # Also check edges with bridge metadata
+        for edge in self.edges.values():
+            if (edge.source_node_id == source_id and 
+                edge.target_node_id == target_id and
+                'bridge_strength' in edge.metadata):
+                return True, edge.metadata['bridge_strength']
+        
+        return False, 0.0
+    
+    def validate_operator_application(
+        self,
+        operator_name: str,
+        operator: Dict,
+        source_node: Optional[Node],
+        target_node: Node,
+        gate_id: Optional[str],
+        exception_id: Optional[str]
+    ) -> Tuple[bool, List[str], List[Dict]]:
+        """
+        Validate if an operator can be applied
+        
+        Returns:
+            Tuple of (can_apply, preconditions_met, constraints_checked)
+        """
+        preconditions_met = []
+        constraints_checked = []
+        
+        # Check gate requirements
+        if operator.get('gate_required', False):
+            gate_type = operator.get('gate_type', 'UNKNOWN')
+            if gate_id and self.gates_authorized.get(gate_id, False):
+                preconditions_met.append(f"gate_{gate_type}_authorized: {gate_id}")
+            else:
+                return False, preconditions_met, [{
+                    'name': 'gate_required',
+                    'passed': False,
+                    'message': f"Gate {gate_type} authorization required but not provided"
+                }]
+        
+        # Check preconditions
+        if 'preconditions' in operator:
+            for precond in operator['preconditions']:
+                if precond == "gate_authorization_required":
+                    continue  # Already handled above
+                elif precond == "bridge_exists_and_strong":
+                    # Special handling for iltizam
+                    if source_node:
+                        exists, strength = self.check_bridge_exists(source_node.node_id, target_node.node_id)
+                        threshold = self.config['parameters'].get('bridge_threshold', 0.7)
+                        if exists and strength >= threshold:
+                            preconditions_met.append(f"bridge_exists_and_strong: {strength:.2f} >= {threshold}")
+                        else:
+                            return False, preconditions_met, [{
+                                'name': 'bridge_exists_and_strong',
+                                'passed': False,
+                                'message': f"Bridge {'does not exist' if not exists else f'too weak ({strength:.2f} < {threshold})'}"
+                            }]
+                else:
+                    preconditions_met.append(precond)
+        
+        # Check constraints
+        if 'constraints' in operator:
+            for constraint in operator['constraints']:
+                constraint_result = {
+                    'name': constraint['name'],
+                    'passed': True,
+                    'message': ''
+                }
+                
+                # Handle different constraint types
+                if constraint['name'] == 'iltizam_requires_bridge':
+                    if source_node:
+                        exists, strength = self.check_bridge_exists(source_node.node_id, target_node.node_id)
+                        threshold = constraint.get('threshold', 0.7)
+                        if not exists or strength < threshold:
+                            constraint_result['passed'] = False
+                            constraint_result['message'] = f"Bridge required for iltizam (exists={exists}, strength={strength:.2f}, threshold={threshold})"
+                
+                elif constraint['name'] == 'bridge_edge_exists':
+                    if source_node:
+                        exists, _ = self.check_bridge_exists(source_node.node_id, target_node.node_id)
+                        if not exists:
+                            constraint_result['passed'] = False
+                            constraint_result['message'] = "Bridge edge does not exist"
+                
+                elif constraint['name'] == 'no_cc_cluster':
+                    # Original CC cluster check
+                    if source_node and target_node:
+                        src_cons = source_node.get_attribute('consonant_code', 0)
+                        tgt_cons = target_node.get_attribute('consonant_code', 0)
+                        src_vowel = source_node.get_attribute('vowel_code', 0)
+                        tgt_vowel = target_node.get_attribute('vowel_code', 0)
+                        
+                        is_cc_cluster = (
+                            src_cons != 0 and tgt_cons != 0 and
+                            src_vowel in [0, 1] and tgt_vowel in [0, 1]
+                        )
+                        
+                        if is_cc_cluster:
+                            if exception_id and self.exceptions_declared.get(exception_id, False):
+                                constraint_result['passed'] = True
+                                constraint_result['message'] = f"CC cluster allowed by exception {exception_id}"
+                            else:
+                                constraint_result['passed'] = False
+                                constraint_result['message'] = "CC cluster detected without exception"
+                
+                constraints_checked.append(constraint_result)
+                
+                if not constraint_result['passed']:
+                    return False, preconditions_met, constraints_checked
+        
+        return True, preconditions_met, constraints_checked
+    
+    def export_proposition(self, filename: str = "proposition.json"):
+        """
+        Export proposition/utterance content with denotation analysis
+        """
+        # Collect scope information
+        scope_nodes = [n for n in self.nodes.values() if n.node_type == 'scope']
+        quantifiers = [n for n in self.nodes.values() if n.node_type == 'quantifier']
+        restrictors = [n for n in self.nodes.values() if n.node_type == 'restrictor']
+        conditions = [n for n in self.nodes.values() if n.node_type == 'condition']
+        goals = [n for n in self.nodes.values() if n.node_type == 'goal']
+        numbers = [n for n in self.nodes.values() if n.node_type == 'number']
+        exceptions = [n for n in self.nodes.values() if n.node_type == 'exception']
+        claims = [n for n in self.nodes.values() if n.node_type == 'claim']
+        
+        # Collect denotation modes used
+        denotation_modes = set()
+        for entry in self.audit_trail:
+            if entry.operator_name.startswith('denotation_'):
+                mode = entry.operator_name.replace('denotation_', '')
+                if entry.status == OperationStatus.SUCCESS:
+                    denotation_modes.add(mode)
+        
+        # Determine truth_apt
+        truth_apt = True
+        if scope_nodes:
+            truth_apt = scope_nodes[0].get_attribute('truth_apt', True)
+        elif claims:
+            truth_apt = claims[0].get_attribute('truth_apt', True)
+        
+        proposition = {
+            'truth_apt': truth_apt,
+            'quantifiers': [{'id': q.node_id, 'type': q.get_attribute('quant_type')} for q in quantifiers],
+            'restrictors': [{'id': r.node_id, 'type': r.get_attribute('restrict_type')} for r in restrictors],
+            'conditions': [{'id': c.node_id, 'type': c.get_attribute('cond_type')} for c in conditions],
+            'goals': [{'id': g.node_id, 'type': g.get_attribute('goal_type')} for g in goals],
+            'numbers': [{'id': n.node_id, 'value': n.get_attribute('number_value')} for n in numbers],
+            'exceptions': [{'id': e.node_id, 'type': e.get_attribute('exception_type')} for e in exceptions],
+            'denotation_modes_used': list(denotation_modes),
+            'scope_count': len(scope_nodes),
+            'claim_count': len(claims)
+        }
+        
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(proposition, f, indent=2, ensure_ascii=False)
+        print(f"✓ Exported proposition to {filename}")
+        
+        return proposition
     
     def print_summary(self):
         """Print summary of graph state"""
@@ -526,6 +653,153 @@ def example_morphological_derivation():
     engine.export_audit_trail('morphology_audit.json')
 
 
+def demo_scope_and_denotation():
+    """Example: Scope construction and denotation with bridge constraints"""
+    print("\n" + "="*60)
+    print("DEMO: Scope and Denotation Analysis")
+    print("="*60 + "\n")
+    
+    engine = GraphEngine()
+    
+    # Create word and concept nodes
+    word1 = engine.create_node('word', {
+        'surface_form': 'كتاب',
+        'syntactic_role': 'mubtada',
+        'case_ending': 'marfou3',
+        'gender': 'mudhakkar',
+        'number': 'mufrad'
+    })
+    
+    concept1 = engine.create_node('concept', {
+        'meaning_id': 'book_concept',
+        'semantic_features': {'category': 'object', 'type': 'reading_material'}
+    })
+    
+    # Create scope node
+    scope1 = engine.create_node('scope', {
+        'scope_type': 'specific',
+        'quant_scope': 'specific',
+        'restrict_scope': 'restricted',
+        'truth_apt': True
+    })
+    
+    # Create quantifier
+    quantifier1 = engine.create_node('quantifier', {
+        'quant_type': 'specific',
+        'domain': 'books'
+    })
+    
+    # Create restrictor
+    restrictor1 = engine.create_node('restrictor', {
+        'restrict_type': 'adjective',
+        'restriction_content': 'الكبير'
+    })
+    
+    # Create condition
+    condition1 = engine.create_node('condition', {
+        'cond_type': 'if_then',
+        'condition_content': 'إذا كان متاحاً'
+    })
+    
+    # Create goal (purpose)
+    goal1 = engine.create_node('goal', {
+        'goal_type': 'purpose',
+        'goal_content': 'لكي نقرأه'
+    })
+    
+    # Create number
+    number1 = engine.create_node('number', {
+        'number_value': 3,
+        'number_type': 'exact'
+    })
+    
+    # Create exception
+    exception1 = engine.create_node('exception', {
+        'exception_type': 'illa',
+        'exception_content': 'إلا القديم'
+    })
+    
+    print("--- Building scope graph ---")
+    
+    # Authorize SCOPE_GATE
+    engine.authorize_gate('scope_gate_1')
+    
+    # Apply scope operators
+    engine.apply_operator('scope_quantify', quantifier1.node_id, scope1.node_id, gate_id='scope_gate_1')
+    engine.apply_operator('scope_restrict', restrictor1.node_id, scope1.node_id, gate_id='scope_gate_1')
+    engine.apply_operator('scope_if_then', condition1.node_id, scope1.node_id, gate_id='scope_gate_1')
+    engine.apply_operator('scope_goal_purpose', goal1.node_id, scope1.node_id, gate_id='scope_gate_1')
+    engine.apply_operator('scope_counts', number1.node_id, scope1.node_id, gate_id='scope_gate_1')
+    engine.apply_operator('scope_except', exception1.node_id, scope1.node_id, gate_id='scope_gate_1')
+    
+    print("\n--- Testing denotation modes ---")
+    
+    # Authorize DENOTATION_GATE
+    engine.authorize_gate('denotation_gate_1')
+    
+    # Test mutabaqa (direct matching) - should succeed
+    print("\n1. Testing mutabaqa (direct matching):")
+    engine.apply_operator('denotation_mutabaqa', word1.node_id, concept1.node_id, gate_id='denotation_gate_1')
+    
+    # Test tadammun (inclusion) - should succeed
+    print("\n2. Testing tadammun (inclusion):")
+    concept2 = engine.create_node('concept', {
+        'meaning_id': 'literature_concept',
+        'semantic_features': {'category': 'abstract', 'includes': 'books'}
+    })
+    engine.apply_operator('denotation_tadammun', word1.node_id, concept2.node_id, gate_id='denotation_gate_1')
+    
+    # Test iltizam without bridge - should fail
+    print("\n3. Testing iltizam WITHOUT bridge (should fail):")
+    concept3 = engine.create_node('concept', {
+        'meaning_id': 'knowledge_concept',
+        'semantic_features': {'category': 'abstract', 'related_to': 'books'}
+    })
+    success, audit = engine.apply_operator('denotation_iltizam', word1.node_id, concept3.node_id, gate_id='denotation_gate_1')
+    
+    # Create bridge and test iltizam again - should succeed
+    print("\n4. Creating bridge and testing iltizam again:")
+    bridge1 = engine.create_node('bridge', {
+        'bridge_type': 'entailment',
+        'bridge_strength': 0.85,
+        'source_id': word1.node_id,
+        'target_id': concept3.node_id
+    })
+    
+    success, audit = engine.apply_operator('denotation_iltizam', word1.node_id, concept3.node_id, gate_id='denotation_gate_1')
+    
+    # Test iltizam with weak bridge - should fail
+    print("\n5. Testing iltizam with WEAK bridge (should fail):")
+    concept4 = engine.create_node('concept', {
+        'meaning_id': 'wisdom_concept',
+        'semantic_features': {'category': 'abstract'}
+    })
+    bridge2 = engine.create_node('bridge', {
+        'bridge_type': 'presupposition',
+        'bridge_strength': 0.5,  # Below threshold
+        'source_id': word1.node_id,
+        'target_id': concept4.node_id
+    })
+    success, audit = engine.apply_operator('denotation_iltizam', word1.node_id, concept4.node_id, gate_id='denotation_gate_1')
+    
+    # Export proposition
+    print("\n--- Exporting proposition ---")
+    proposition = engine.export_proposition('proposition.json')
+    print(f"\nProposition summary:")
+    print(f"  Truth-apt: {proposition['truth_apt']}")
+    print(f"  Quantifiers: {len(proposition['quantifiers'])}")
+    print(f"  Restrictors: {len(proposition['restrictors'])}")
+    print(f"  Conditions: {len(proposition['conditions'])}")
+    print(f"  Goals: {len(proposition['goals'])}")
+    print(f"  Numbers: {len(proposition['numbers'])}")
+    print(f"  Exceptions: {len(proposition['exceptions'])}")
+    print(f"  Denotation modes used: {', '.join(proposition['denotation_modes_used'])}")
+    
+    engine.print_summary()
+    engine.export_audit_trail('scope_denotation_audit.json')
+    engine.export_graph('scope_denotation_graph.json')
+
+
 if __name__ == "__main__":
     print("FractalHub Graph Engine")
     print("=" * 60)
@@ -533,6 +807,12 @@ if __name__ == "__main__":
     # Run examples
     example_phonological_analysis()
     example_morphological_derivation()
+    demo_scope_and_denotation()
     
     print("\n✓ All examples completed")
-    print("Check 'phonology_audit.json' and 'morphology_audit.json' for detailed audit trails")
+    print("Check audit trail files for detailed operation logs:")
+    print("  - phonology_audit.json")
+    print("  - morphology_audit.json")
+    print("  - scope_denotation_audit.json")
+    print("  - proposition.json")
+    print("  - scope_denotation_graph.json")
