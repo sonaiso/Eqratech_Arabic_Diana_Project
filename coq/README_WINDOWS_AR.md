@@ -107,12 +107,13 @@ coqc --version
 ```
 coq/
 ├── theories/
-│   ├── FractalHubSpec.v        # المواصفات الأساسية
-│   ├── FractalHubGates.v       # تعريفات البوابات والعمليات
-│   ├── FractalHubDerivation.v  # الاشتقاقات والبراهين
-│   └── FractalHubPhonology.v   # القيود الفونولوجية والنطق
-├── _CoqProject                 # ملف مشروع Coq
-└── README_WINDOWS_AR.md        # هذا الملف
+│   ├── FractalHubSpec.v              # المواصفات الأساسية
+│   ├── FractalHubGates.v             # تعريفات البوابات والعمليات
+│   ├── FractalHubDerivation.v        # الاشتقاقات والبراهين
+│   ├── FractalHubPhonology.v         # القيود الفونولوجية والنطق
+│   └── FractalHubSyntaxDerivation.v  # الاشتقاق النحوي وبراهين البنية
+├── _CoqProject                       # ملف مشروع Coq
+└── README_WINDOWS_AR.md              # هذا الملف
 ```
 
 ### أوامر البناء
@@ -141,6 +142,9 @@ coqc -q -R theories FractalHub theories/FractalHubDerivation.v
 
 # بناء القيود الفونولوجية (FractalHubPhonology)
 coqc -q -R theories FractalHub theories/FractalHubPhonology.v
+
+# بناء الاشتقاق النحوي (FractalHubSyntaxDerivation)
+coqc -q -R theories FractalHub theories/FractalHubSyntaxDerivation.v
 ```
 
 **شرح الخيارات:**
@@ -156,6 +160,7 @@ coqc -q -R theories FractalHub theories/FractalHubPhonology.v
 - `FractalHubGates.vo`
 - `FractalHubDerivation.vo`
 - `FractalHubPhonology.vo`
+- `FractalHubSyntaxDerivation.vo`
 
 هذه الملفات هي نتيجة عملية التحقق والبناء.
 
@@ -167,7 +172,8 @@ coqc -q -R theories FractalHub theories/FractalHubPhonology.v
 coqc -q -R theories FractalHub theories/FractalHubSpec.v && `
 coqc -q -R theories FractalHub theories/FractalHubGates.v && `
 coqc -q -R theories FractalHub theories/FractalHubDerivation.v && `
-coqc -q -R theories FractalHub theories/FractalHubPhonology.v
+coqc -q -R theories FractalHub theories/FractalHubPhonology.v && `
+coqc -q -R theories FractalHub theories/FractalHubSyntaxDerivation.v
 ```
 
 **ملاحظة**: في PowerShell، يُستخدم الرمز `` ` `` (backtick) لكسر الأمر على عدة أسطر.
