@@ -11,10 +11,11 @@ This guide provides a summary of all documentation files available in the Eqrate
 ### 1. README.md
 **الملف الرئيسي للمشروع / Main Project File**
 
-- **المحتوى / Content**: نظرة عامة، التثبيت، الاستخدام السريع، البنية المعمارية
+- **المحتوى / Content**: نظرة عامة، البنية المعمارية المزدوجة، التثبيت، الاستخدام السريع، التحقق الرسمي
 - **اللغة / Language**: ثنائي اللغة (عربي/إنجليزي) / Bilingual (Arabic/English)
 - **الجمهور / Audience**: جميع المستخدمين / All users
 - **الموقع / Location**: `/README.md`
+- **التحديث**: يتضمن الآن معلومات عن نواة Coq للتحقق الرسمي
 
 ### 2. PROJECT_FEATURES_AR.md
 **وصف تفصيلي بالعربية / Detailed Description in Arabic**
@@ -68,25 +69,39 @@ This guide provides a summary of all documentation files available in the Eqrate
 - **المحتوى / Content**: وثائق دفتر Jupyter للتدريب على القرآن
 - **الموقع / Location**: `/docs/colab_quran_transformer.md`
 
+### 7. coq/README.md
+**وثائق نواة التحقق الرسمي / Formal Verification Kernel Documentation**
+
+- **المحتوى / Content**: النمط الفراكتالي C1-C2-C3، نظام الأدوار، البناء والتكامل
+- **اللغة / Language**: الإنجليزية / English
+- **الجمهور / Audience**: الباحثون في التحقق الرسمي / Formal verification researchers
+- **الموقع / Location**: `/coq/README.md`
+
 ## كيفية البدء / How to Start
 
 ### للمستخدمين الجدد / For New Users
 1. ابدأ بقراءة `README.md`
 2. للتفاصيل الكاملة، راجع `PROJECT_FEATURES_AR.md` (عربي) أو `PROJECT_FEATURES_EN.md` (إنجليزي)
+3. للتحقق الرسمي، راجع `coq/README.md`
 
 ### For New Users
 1. Start by reading `README.md`
 2. For complete details, review `PROJECT_FEATURES_AR.md` (Arabic) or `PROJECT_FEATURES_EN.md` (English)
+3. For formal verification, see `coq/README.md`
 
 ### للباحثين / For Researchers
 - راجع الوثائق التفصيلية للحصول على فهم عميق للمحركات والخوارزميات
+- للتحقق الرسمي والإثباتات الرياضية، راجع `coq/` directory
 - Review detailed documentation for deep understanding of engines and algorithms
+- For formal verification and mathematical proofs, see `coq/` directory
 
 ### للمطورين / For Developers
 - راجع `README.md` لإرشادات التثبيت والاستخدام
 - راجع الكود المصدري للتفاصيل التقنية
+- استخدم `coq_bridge.py` لدمج التحقق الرسمي مع محركات Python
 - Review `README.md` for installation and usage instructions
 - Review source code for technical details
+- Use `coq_bridge.py` to integrate formal verification with Python engines
 
 ## الإحصائيات / Statistics
 
