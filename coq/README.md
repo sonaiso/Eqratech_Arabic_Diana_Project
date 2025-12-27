@@ -57,7 +57,35 @@ The formalization is structured into several modules:
 - Phonetic soundness: consonant-vowel pairing constraints
 - Uses only safe tactics: reflexivity, exact, apply, destruct, lia
 
-### 6. All.v
+### 6. Morphology.v
+**Morphological layer formalization**
+
+- Defines Root types (trilateral and quadrilateral)
+- Implements Pattern types (morphological templates)
+- Models MorphWord (root + pattern combination)
+- Validates root-pattern compatibility
+- Main theorem: **Morphological_Fractal_Soundness** - proves morphological operations preserve validity
+- Integrates with C1-C2-C3 architecture (Root=C1, Pattern=C2, Word=C3)
+
+### 7. SyntacticIntegration.v
+**Syntactic layer: C2Spec integration with roles and morphology**
+
+- Combines morphological and semantic layers
+- Implements role licensing validation
+- Validates syntactic constructs (word + spec + roles)
+- Active/passive voice handling
+- Main theorem: **Syntactic_Fractal_Soundness** - ensures proper integration across layers
+
+### 8. Examples.v
+**Concrete proofs for real Arabic constructs**
+
+- **كَتَبَ (kataba)**: "he wrote" - active trilateral verb with full proof
+- **كُتِبَ (kutiba)**: "it was written" - passive form with role promotion
+- **دَحْرَجَ (dahraja)**: "he rolled" - quadrilateral verb demonstration
+- Demonstrates complete C1-C2-C3 fractal validation
+- All examples formally verified with proofs
+
+### 9. All.v
 **Main export module**
 
 ## Building
