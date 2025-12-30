@@ -139,30 +139,11 @@ Record FullLink := {
 (* 6) Digital Roundtrip: encode -> decode identity                 *)
 (* ================================================================ *)
 
-(* Roundtrip property: if we can decode, encoding preserves structure *)
-Theorem encode_preserves_nonempty : 
-  forall s:Sentence, 
-  C3_ok s = true -> 
-  encode_sentence s <> 0.
-Proof.
-  intros s H.
-  unfold C3_ok in H.
-  unfold encode_sentence.
-  destruct (sentence_tokens s) as [|t ts] eqn:E.
-  - discriminate H.
-  - simpl. unfold Present.
-    (* At least one token, so sum > 0 if token_id t > 0 *)
-    (* This requires token IDs are positive - add as constraint *)
-    (* For now, we prove it's decodable *)
-    intro K.
-    (* This needs additional constraint that token_id > 0 *)
-    (* We'll add a well-formedness condition *)
-Admitted. (* Requires: token_id > 0 constraint *)
-
-(* Better version with constraint *)
+(* Roundtrip property: encoding preserves non-empty structure *)
+(* Constraint: all token IDs must be positive *)
 Parameter token_id_positive : forall t:Token, token_id t > 0.
 
-Theorem encode_preserves_nonempty_v2 : 
+Theorem encode_preserves_nonempty : 
   forall s:Sentence, 
   C3_ok s = true -> 
   encode_sentence s > 0.
@@ -187,7 +168,7 @@ Proof.
   unfold present_nat.
   apply negb_true_iff.
   apply Nat.eqb_neq.
-  pose proof (encode_preserves_nonempty_v2 s H).
+  pose proof (encode_preserves_nonempty s H).
   FVAFK_lia.
 Qed.
 
