@@ -90,6 +90,21 @@ jobs:
           path: coq/theories/ArabicKernel/TCB_MANIFEST.json
           retention-days: 90
 
+      - name: Generate Final Proof Artifacts
+        working-directory: coq
+        run: |
+          echo "🎯 Generating final proof artifacts (3 critical pieces of evidence)..."
+          python3 generate_final_proof_artifacts.py
+          cat theories/ArabicKernel/FINAL_PROOF_ARTIFACTS.json
+          echo "✅ Final proof artifacts generated"
+
+      - name: Upload Final Proof Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-proof-artifacts
+          path: coq/theories/ArabicKernel/FINAL_PROOF_ARTIFACTS.json
+          retention-days: 365
+      
       - name: Generate verification report
         if: success()
         run: |
