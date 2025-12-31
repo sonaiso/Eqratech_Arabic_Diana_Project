@@ -1,6 +1,12 @@
 -Q theories ArabicKernel
 -arg -w -arg -notation-overridden
 
+# ============================================================================
+# Phase 1 Modules - Academically Certified (FROZEN)
+# ============================================================================
+# Status: 100% proven (~39 theorems), 0 Admitted, 0 Axiom
+# DO NOT MODIFY - Maintains FINAL_PROOF_ARTIFACTS.json certification
+
 theories/ArabicKernel/FractalCore.v
 theories/ArabicKernel/Roles.v
 theories/ArabicKernel/SlotsTable.v
@@ -11,3 +17,13 @@ theories/ArabicKernel/SyntacticIntegration.v
 theories/ArabicKernel/Examples.v
 theories/ArabicKernel/FractalDigitalRoundTrip.v
 theories/ArabicKernel/All.v
+
+# ============================================================================
+# Phase 2 Bridge Modules - SSOT-Driven Awareness Layer
+# ============================================================================
+# Status: Auto-generated from ssot/fractalhub_dictionary_v04_1_awareness.yaml
+# Regenerate with: python3 ssot/generate_coq_from_ssot.py
+
+theories/ArabicKernel/Phase2/FractalHubIds.v
+theories/ArabicKernel/Phase2/RuleSpec_CouplingRules.v
+theories/ArabicKernel/Phase2/All.v
