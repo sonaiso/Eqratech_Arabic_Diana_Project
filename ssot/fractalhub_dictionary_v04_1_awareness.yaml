@@ -1,0 +1,295 @@
+# FractalHub Dictionary V04.1 - Awareness Extension
+# SSOT (Single Source of Truth) for Arabic NLP Fractal System
+# Extends V04 with consciousness-inspired awareness layer (P/S/M/K)
+#
+# This YAML serves as the authoritative source for:
+# - Node type IDs (including awareness nodes)
+# - Edge type IDs (including coupling edges)
+# - Feature IDs (awareness-related features)
+# - Atomic primitives for the system
+#
+# Auto-generates:
+# - Coq constants (FractalHubIds.v)
+# - RuleSpec coupling rules (RuleSpec_CouplingRules.v)
+#
+# Version: 04.1
+# Date: 2025-12-31
+# Status: Phase 2 Bridge - Extends Phase 1 (Academically Certified)
+
+metadata:
+  version: "04.1"
+  phase: "Phase 2 Bridge"
+  base_version: "04.0"
+  description: "Awareness extension with P/S/M/K consciousness nodes"
+  maintains_phase1_certification: true
+  
+# ============================================================================
+# NODE TYPES - Awareness Extension
+# ============================================================================
+# Phase 1 nodes (16000-16019) remain unchanged
+# Phase 2 adds awareness nodes (16020-16023)
+
+NODE_TYPES:
+  # Phase 1 Core Nodes (preserved)
+  16000:
+    name: NODE_TOKEN
+    description: "Basic linguistic token"
+    phase: 1
+    
+  16001:
+    name: NODE_SEGMENT
+    description: "Linguistic segment/phrase"
+    phase: 1
+    
+  16002:
+    name: NODE_CONCEPT
+    description: "Abstract concept (C1 layer)"
+    phase: 1
+    
+  16003:
+    name: NODE_NUCLEUS
+    description: "Reality anchor (C2 layer)"
+    phase: 1
+    
+  # Phase 2 Awareness Nodes (NEW)
+  16020:
+    name: NODE_PREMODEL
+    description: "Pre-Signified (P) - Before semantic fixing"
+    phase: 2
+    awareness_role: "P"
+    arabic_term: "ما قبل المدلول"
+    
+  16021:
+    name: NODE_SIGNIFIER
+    description: "Signifier (S) - The linguistic sign (C3)"
+    phase: 2
+    awareness_role: "S"
+    arabic_term: "الدال"
+    c_layer: "C3"
+    
+  16022:
+    name: NODE_SIGNIFIED
+    description: "Signified (M) - The meaning/concept (C1)"
+    phase: 2
+    awareness_role: "M"
+    arabic_term: "المدلول"
+    c_layer: "C1"
+    
+  16023:
+    name: NODE_COUPLED
+    description: "Coupling (K) - Signifier+Signified with constraints"
+    phase: 2
+    awareness_role: "K"
+    arabic_term: "الاقتران"
+    coupling: true
+
+# ============================================================================
+# EDGE TYPES - Coupling Edges Extension
+# ============================================================================
+# Phase 1 edges (20000-20009) remain unchanged
+# Phase 2 adds coupling edges (20210-20215)
+
+EDGE_TYPES:
+  # Phase 1 Core Edges (preserved)
+  20000:
+    name: NEXT_TOKEN
+    description: "Sequential token connection"
+    phase: 1
+    
+  20001:
+    name: NEXT_SEGMENT
+    description: "Sequential segment connection"
+    phase: 1
+    
+  20002:
+    name: C3_TO_C1
+    description: "Language to Concept link"
+    phase: 1
+    
+  20003:
+    name: C1_TO_C2
+    description: "Concept to Reality link"
+    phase: 1
+    
+  # Phase 2 Awareness Edges (NEW)
+  20210:
+    name: PRE_TO_SIG
+    description: "P → S transition"
+    phase: 2
+    from_node: NODE_PREMODEL
+    to_node: NODE_SIGNIFIER
+    coupling_type: "pre_semantic"
+    
+  20211:
+    name: SIG_TO_SEM
+    description: "S → M (Signifier to Meaning)"
+    phase: 2
+    from_node: NODE_SIGNIFIER
+    to_node: NODE_SIGNIFIED
+    coupling_type: "semantic_fixing"
+    c_transition: "C3_TO_C1"
+    
+  20212:
+    name: SEM_TO_WORLD
+    description: "M → World (when measurements available)"
+    phase: 2
+    from_node: NODE_SIGNIFIED
+    to_node: NODE_NUCLEUS
+    coupling_type: "grounding"
+    c_transition: "C1_TO_C2"
+    requires_data: true
+    
+  20213:
+    name: COUPLED_OF
+    description: "K → (P,S,M) relationship"
+    phase: 2
+    from_node: NODE_COUPLED
+    coupling_type: "reification"
+    
+  20214:
+    name: ANCHOR_PREV
+    description: "S → P (C2 anchor to previous)"
+    phase: 2
+    from_node: NODE_SIGNIFIER
+    to_node: NODE_PREMODEL
+    coupling_type: "backward_anchor"
+    anchor_direction: "prev"
+    
+  20215:
+    name: ANCHOR_NEXT
+    description: "S → M (C2 anchor to next)"
+    phase: 2
+    from_node: NODE_SIGNIFIER
+    to_node: NODE_SIGNIFIED
+    coupling_type: "forward_anchor"
+    anchor_direction: "next"
+
+# ============================================================================
+# FEATURE IDS - Awareness Features
+# ============================================================================
+# Phase 1 features (12000-12100) remain unchanged
+# Phase 2 adds awareness features (12101-12112)
+
+FEAT_IDS:
+  # Phase 1 Core Features (preserved)
+  12000:
+    name: FEAT_ROOT
+    description: "Root morpheme feature"
+    phase: 1
+    
+  12001:
+    name: FEAT_PATTERN
+    description: "Morphological pattern feature"
+    phase: 1
+    
+  # Phase 2 Awareness Features (NEW)
+  12101:
+    name: AWARE_PREMODEL
+    description: "Pre-semantic awareness marker"
+    phase: 2
+    applies_to: [NODE_PREMODEL]
+    
+  12102:
+    name: AWARE_SIGNIFIER
+    description: "Signifier awareness marker"
+    phase: 2
+    applies_to: [NODE_SIGNIFIER]
+    
+  12103:
+    name: AWARE_SIGNIFIED
+    description: "Signified awareness marker"
+    phase: 2
+    applies_to: [NODE_SIGNIFIED]
+    
+  12104:
+    name: AWARE_COUPLED
+    description: "Coupling awareness marker"
+    phase: 2
+    applies_to: [NODE_COUPLED]
+    
+  12110:
+    name: COUPLING_ANCHOR_C2
+    description: "C2 anchoring feature (prev/next)"
+    phase: 2
+    coupling_constraint: true
+    
+  12111:
+    name: COUPLING_RADIUS_1
+    description: "Immediate coupling (radius=1)"
+    phase: 2
+    radius: 1
+    
+  12112:
+    name: COUPLING_RADIUS_N
+    description: "Extended coupling (radius>1)"
+    phase: 2
+    radius: "variable"
+
+# ============================================================================
+# COUPLING RULES - Proof-Carrying Constraints
+# ============================================================================
+# Defines the RuleSpec framework for coupling verification
+
+COUPLING_RULES:
+  RULE_01:
+    name: "SignifierRequiresSignified"
+    description: "Every Signifier (S) must have corresponding Signified (M)"
+    constraint_type: "existence"
+    premises:
+      - "node_type = NODE_SIGNIFIER"
+    conclusion:
+      - "exists edge SIG_TO_SEM"
+    certificate_required: true
+    
+  RULE_02:
+    name: "CouplingBindsThree"
+    description: "Coupling (K) binds exactly P, S, M"
+    constraint_type: "structural"
+    premises:
+      - "node_type = NODE_COUPLED"
+    conclusion:
+      - "exists edges to NODE_PREMODEL, NODE_SIGNIFIER, NODE_SIGNIFIED"
+    certificate_required: true
+    
+  RULE_03:
+    name: "AnchorPreservesC2"
+    description: "C2 anchor must reference existing nodes"
+    constraint_type: "validity"
+    premises:
+      - "edge_type in [ANCHOR_PREV, ANCHOR_NEXT]"
+    conclusion:
+      - "target node exists and validated"
+    certificate_required: true
+    
+  RULE_04:
+    name: "WorldGroundingRequiresData"
+    description: "SEM_TO_WORLD edge requires measurement data"
+    constraint_type: "precondition"
+    premises:
+      - "edge_type = SEM_TO_WORLD"
+    conclusion:
+      - "measurement_data_present = true"
+    certificate_required: true
+    allows_rejection: true  # None → Reject if data missing
+
+# ============================================================================
+# PRIME ASSIGNMENTS - For Phase 3 PEL Theory (Future)
+# ============================================================================
+# Reserved for Phase 3: Prime-Exponent Lattice integration
+# Each atomic feature gets unique prime number
+
+PRIME_ASSIGNMENTS:
+  reserved_for_phase3: true
+  description: "Prime number assignments for PEL algebra"
+  # Will be populated in Phase 3
+
+# ============================================================================
+# VERIFICATION METADATA
+# ============================================================================
+
+verification:
+  phase1_compatibility: true
+  maintains_existing_theorems: true
+  added_theorems_count: 0  # Phase 2 bridge adds infrastructure, not theorems yet
+  breaking_changes: false
+  coq_generation_target: "coq/theories/ArabicKernel/Phase2"
