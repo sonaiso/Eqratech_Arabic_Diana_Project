@@ -5,6 +5,7 @@ A programmable kernel implementing C1-C2-C3 architecture with:
 - C1: Signifier layer (form/phonemes/diacritics)
 - C2: Trace layer (gate processing with evidence)
 - C3: Signified layer (meaning graph)
+- Reasoning: Four modes (deductive/inductive/abductive/inferential)
 
 Based on النبهاني's theory: reality + brain + sensing + prior_knowledge
 
@@ -32,6 +33,12 @@ from .invariants import (
     InvariantManager, ConservationChecker, SymmetryChecker,
     ConservationRule, ConservationType, SymmetryRule, SymmetryType,
     LinguisticInvariants
+)
+from .reasoning import (
+    ReasoningEngine, ReasoningMode, ReasoningStrength,
+    Premise, Conclusion, ReasoningStep,
+    DeductiveReasoner, InductiveReasoner, AbductiveReasoner, InferentialReasoner,
+    create_arabic_reasoning_engine
 )
 
 __version__ = "1.1.0"
@@ -74,4 +81,15 @@ __all__ = [
     "SymmetryRule",
     "SymmetryType",
     "LinguisticInvariants",
+    "ReasoningEngine",
+    "ReasoningMode",
+    "ReasoningStrength",
+    "Premise",
+    "Conclusion",
+    "ReasoningStep",
+    "DeductiveReasoner",
+    "InductiveReasoner",
+    "AbductiveReasoner",
+    "InferentialReasoner",
+    "create_arabic_reasoning_engine",
 ]
