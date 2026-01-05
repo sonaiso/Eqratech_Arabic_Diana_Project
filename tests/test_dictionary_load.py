@@ -65,7 +65,7 @@ class TestDictionaryV02:
     
     def test_v02_has_all_sections(self, dict_v02):
         """Test that v02 has all required sections"""
-        required = ['meta', 'units', 'gates', 'evidence', 'invariants', 'tags', 'mappings']
+        required = ['meta', 'units', 'gates', 'evidence', 'invariants', 'tags', 'mappings', 'repair_operations']
         for key in required:
             assert key in dict_v02, f"Missing required section: {key}"
     

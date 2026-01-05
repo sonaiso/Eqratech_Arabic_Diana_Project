@@ -14,7 +14,7 @@ from datetime import datetime
 class DictionaryValidator:
     """Validates FractalHub dictionary YAML files"""
     
-    REQUIRED_TOP_KEYS = ['meta', 'units', 'gates', 'evidence', 'invariants']
+    REQUIRED_TOP_KEYS = ['meta', 'units', 'gates', 'evidence', 'invariants', 'tags', 'mappings']
     REQUIRED_META_KEYS = ['dict_version', 'schema_version', 'generated_at']
     REQUIRED_UNIT_KEYS = ['unit_id', 'kind', 'status']
     REQUIRED_GATE_KEYS = ['gate_id', 'layer', 'inputs', 'outputs', 'status']
