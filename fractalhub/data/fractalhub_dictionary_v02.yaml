@@ -1,0 +1,479 @@
+# ============================================================================
+# FractalHub Dictionary v02
+# القاموس الموحد للمشروع العربي - الإصدار الثاني
+# ============================================================================
+#
+# Description:
+#   Unified dictionary for Arabic linguistic processing following the TAQI
+#   framework (Constrained Acoustic Energy Flow). Contains atomic linguistic
+#   units, processing gates, invariants, and epistemic evidence levels.
+#
+# Structure:
+#   - meta:               Version control and compatibility metadata
+#   - units:              Atomic linguistic units (19 items)
+#   - gates:              Processing gates across 6 layers (12 items)
+#   - evidence:           Epistemic levels and anchor rules
+#   - invariants:         Immutable constraints (5 items)
+#   - tags:               Classification metadata
+#   - mappings:           Backward compatibility mappings
+#   - repair_operations:  Automatic repair operations (3 items)
+#   - unit_delta_ops:     Unit transformation operations
+#
+# Version: v02
+# Date: 2026-01-05
+# License: MIT
+# Author: Eqratech Arabic Diana Project
+# ============================================================================
+
+meta:
+  dict_version: 2
+  codec_version: 1
+  schema_version: 1
+  generated_at: "2026-01-05T12:00:00Z"
+  compatibility:
+    v01_supported: true
+    breaking_changes: false
+  changelog:
+    - "Added explicit versioning metadata"
+    - "Normalized structure with ordered top-level keys"
+    - "Added phonology atoms for diacritics"
+    - "Added repair/delta operations definitions"
+    - "Enhanced gates registry alignment"
+    - "Added epistemic evidence levels"
+    - "Improved backward compatibility with mappings"
+
+units:
+  # الحركات والتشكيل (Diacritics)
+  U:DIACRITIC:FATHA:
+    unit_id: "U:DIACRITIC:FATHA"
+    kind: "diacritic"
+    text: "َ"
+    features: ["short_vowel", "a_sound", "fatha"]
+    status: "active"
+  
+  U:DIACRITIC:DAMMA:
+    unit_id: "U:DIACRITIC:DAMMA"
+    kind: "diacritic"
+    text: "ُ"
+    features: ["short_vowel", "u_sound", "damma"]
+    status: "active"
+  
+  U:DIACRITIC:KASRA:
+    unit_id: "U:DIACRITIC:KASRA"
+    kind: "diacritic"
+    text: "ِ"
+    features: ["short_vowel", "i_sound", "kasra"]
+    status: "active"
+  
+  U:DIACRITIC:SUKUN:
+    unit_id: "U:DIACRITIC:SUKUN"
+    kind: "diacritic"
+    text: "ْ"
+    features: ["no_vowel", "sukun"]
+    status: "active"
+  
+  U:DIACRITIC:SHADDA:
+    unit_id: "U:DIACRITIC:SHADDA"
+    kind: "diacritic"
+    text: "ّ"
+    features: ["gemination", "shadda"]
+    status: "active"
+  
+  U:DIACRITIC:TANWIN_FATH:
+    unit_id: "U:DIACRITIC:TANWIN_FATH"
+    kind: "diacritic"
+    text: "ً"
+    features: ["tanwin", "fath", "nunation"]
+    status: "active"
+  
+  U:DIACRITIC:TANWIN_DAMM:
+    unit_id: "U:DIACRITIC:TANWIN_DAMM"
+    kind: "diacritic"
+    text: "ٌ"
+    features: ["tanwin", "damm", "nunation"]
+    status: "active"
+  
+  U:DIACRITIC:TANWIN_KASR:
+    unit_id: "U:DIACRITIC:TANWIN_KASR"
+    kind: "diacritic"
+    text: "ٍ"
+    features: ["tanwin", "kasr", "nunation"]
+    status: "active"
+  
+  # علامات الوصل والوقف (Prosody)
+  U:PROSODY:WASL:
+    unit_id: "U:PROSODY:WASL"
+    kind: "prosody"
+    text: "وصل"
+    features: ["liaison", "wasl"]
+    status: "active"
+  
+  U:PROSODY:WAQF:
+    unit_id: "U:PROSODY:WAQF"
+    kind: "prosody"
+    text: "وقف"
+    features: ["pause", "waqf"]
+    status: "active"
+  
+  U:PROSODY:INTONATION_RISE:
+    unit_id: "U:PROSODY:INTONATION_RISE"
+    kind: "prosody"
+    text: "ارتفاع"
+    features: ["intonation", "rise"]
+    status: "active"
+  
+  U:PROSODY:INTONATION_FALL:
+    unit_id: "U:PROSODY:INTONATION_FALL"
+    kind: "prosody"
+    text: "انخفاض"
+    features: ["intonation", "fall"]
+    status: "active"
+  
+  # أمثلة على وحدات صوتية (Phonemes)
+  U:PHONEME:HAMZA:
+    unit_id: "U:PHONEME:HAMZA"
+    kind: "phoneme"
+    text: "ء"
+    features: ["glottal_stop", "consonant"]
+    status: "active"
+  
+  U:PHONEME:BA:
+    unit_id: "U:PHONEME:BA"
+    kind: "phoneme"
+    text: "ب"
+    features: ["bilabial", "plosive", "consonant"]
+    status: "active"
+  
+  U:PHONEME:TA:
+    unit_id: "U:PHONEME:TA"
+    kind: "phoneme"
+    text: "ت"
+    features: ["alveolar", "plosive", "consonant"]
+    status: "active"
+  
+  # وحدات مورفيمية (Morphemes)
+  U:MORPHEME:PREFIX_AL:
+    unit_id: "U:MORPHEME:PREFIX_AL"
+    kind: "morpheme"
+    text: "ال"
+    features: ["definite_article", "prefix"]
+    links: []
+    status: "active"
+  
+  U:MORPHEME:SUFFIX_AT:
+    unit_id: "U:MORPHEME:SUFFIX_AT"
+    kind: "morpheme"
+    text: "ة"
+    features: ["feminine_marker", "suffix"]
+    links: []
+    status: "active"
+  
+  # وحدات رمزية (Tokens)
+  U:TOKEN:SPACE:
+    unit_id: "U:TOKEN:SPACE"
+    kind: "token"
+    text: " "
+    features: ["whitespace", "separator"]
+    status: "active"
+  
+  U:TOKEN:COMMA:
+    unit_id: "U:TOKEN:COMMA"
+    kind: "token"
+    text: "،"
+    features: ["punctuation", "separator"]
+    status: "active"
+
+gates:
+  # طبقة C1: التحقق من الترميز
+  G:C1:CODEC_VERIFY:
+    gate_id: "G:C1:CODEC_VERIFY"
+    layer: "C1"
+    description: "التحقق من صحة الترميز"
+    inputs: ["raw_text"]
+    outputs: ["verified_units"]
+    constraints:
+      - "UTF-8 valid"
+      - "Arabic codepoint range"
+    evidence_required: true
+    status: "active"
+  
+  G:C1:DIACRITIC_ATTACH:
+    gate_id: "G:C1:DIACRITIC_ATTACH"
+    layer: "C1"
+    description: "ربط الحركات بالأحرف"
+    inputs: ["base_char", "diacritic"]
+    outputs: ["vocalized_unit"]
+    constraints:
+      - "diacritic_follows_base"
+    evidence_required: true
+    status: "active"
+  
+  # طبقة C2: القواعد الثابتة
+  G:C2:INVARIANTS:
+    gate_id: "G:C2:INVARIANTS"
+    layer: "C2"
+    description: "تطبيق القواعد الثابتة"
+    inputs: ["C1_output"]
+    outputs: ["validated_structure"]
+    constraints:
+      - "all_invariants_satisfied"
+    evidence_required: true
+    status: "active"
+  
+  G:C2:MORPHEME_VALIDATE:
+    gate_id: "G:C2:MORPHEME_VALIDATE"
+    layer: "C2"
+    description: "التحقق من صحة المورفيمات"
+    inputs: ["morpheme_sequence"]
+    outputs: ["valid_morphemes"]
+    constraints:
+      - "valid_morpheme_combination"
+    evidence_required: true
+    status: "active"
+  
+  # طبقة P1: الصوتيات الأساسية
+  G:P1:DOUBLE_SUKUN:
+    gate_id: "G:P1:DOUBLE_SUKUN"
+    layer: "P1"
+    description: "منع السكون المزدوج"
+    inputs: ["phoneme_sequence"]
+    outputs: ["corrected_sequence"]
+    constraints:
+      - "no_consecutive_sukun"
+    evidence_required: true
+    penalty: 0.9
+    status: "active"
+  
+  G:P1:ASSIMILATION:
+    gate_id: "G:P1:ASSIMILATION"
+    layer: "P1"
+    description: "قواعد الإدغام"
+    inputs: ["adjacent_phonemes"]
+    outputs: ["assimilated_phonemes"]
+    constraints:
+      - "assimilation_rules_apply"
+    evidence_required: true
+    status: "active"
+  
+  # طبقة P2: الصوتيات المتقدمة
+  G:P2:WASL_BEGIN:
+    gate_id: "G:P2:WASL_BEGIN"
+    layer: "P2"
+    description: "معالجة الوصل في بداية الكلمة"
+    inputs: ["word_boundary", "first_phoneme"]
+    outputs: ["wasl_applied"]
+    constraints:
+      - "word_initial_position"
+      - "wasl_conditions_met"
+    evidence_required: true
+    status: "active"
+  
+  G:P2:STRESS_PATTERN:
+    gate_id: "G:P2:STRESS_PATTERN"
+    layer: "P2"
+    description: "تعيين أنماط النبر"
+    inputs: ["syllable_structure"]
+    outputs: ["stress_marked"]
+    constraints:
+      - "stress_rules_apply"
+    evidence_required: false
+    status: "active"
+  
+  # طبقة P3: التنغيم والتطريز
+  G:P3:PROSODY_ASSIGN:
+    gate_id: "G:P3:PROSODY_ASSIGN"
+    layer: "P3"
+    description: "تعيين النغمة والتنغيم"
+    inputs: ["phonological_phrase"]
+    outputs: ["prosody_marked"]
+    constraints:
+      - "intonation_contour_valid"
+    evidence_required: false
+    status: "active"
+  
+  G:P3:PAUSE_INSERT:
+    gate_id: "G:P3:PAUSE_INSERT"
+    layer: "P3"
+    description: "إدراج الوقف المناسب"
+    inputs: ["phrase_boundary"]
+    outputs: ["pause_inserted"]
+    constraints:
+      - "natural_pause_position"
+    evidence_required: false
+    status: "active"
+  
+  # طبقة C3: المرجع
+  G:C3:REFERENCE:
+    gate_id: "G:C3:REFERENCE"
+    layer: "C3"
+    description: "التحقق من المطابقة المرجعية"
+    inputs: ["derived_form", "reference_corpus"]
+    outputs: ["reference_validated"]
+    constraints:
+      - "corpus_attestation"
+    evidence_required: true
+    status: "active"
+  
+  G:C3:SEMANTIC_CHECK:
+    gate_id: "G:C3:SEMANTIC_CHECK"
+    layer: "C3"
+    description: "التحقق من الدلالة المعجمية"
+    inputs: ["lexical_item"]
+    outputs: ["semantic_validated"]
+    constraints:
+      - "lexicon_entry_exists"
+    evidence_required: true
+    status: "active"
+
+evidence:
+  epistemic_levels:
+    YAQIN:
+      level: "YAQIN"
+      certainty: 1.0
+      description: "اليقين - تأكيد كامل"
+      requirements:
+        - "corpus_attestation"
+        - "multiple_sources"
+    
+    ZANN:
+      level: "ZANN"
+      certainty: 0.7
+      description: "الظن - ترجيح قوي"
+      requirements:
+        - "single_source"
+        - "rule_derived"
+    
+    SHAKK:
+      level: "SHAKK"
+      certainty: 0.4
+      description: "الشك - احتمال ضعيف"
+      requirements:
+        - "inference_only"
+  
+  anchor_rules:
+    NO_MEANING_WITHOUT_EVIDENCE:
+      rule_id: "NO_MEANING_WITHOUT_EVIDENCE"
+      description: "لا يمكن إنتاج معنى بدون دليل أو معرف سابق"
+      enforcement: "strict"
+      applies_to:
+        - "semantic_gates"
+        - "interpretation_gates"
+    
+    EVIDENCE_PROPAGATION:
+      rule_id: "EVIDENCE_PROPAGATION"
+      description: "الدليل ينتقل عبر السلسلة"
+      enforcement: "soft"
+      applies_to:
+        - "all_gates"
+
+invariants:
+  INV:NO_ORPHAN_DIACRITIC:
+    inv_id: "INV:NO_ORPHAN_DIACRITIC"
+    scope: "C1"
+    pattern: "لا يمكن أن تظهر الحركة بدون حرف أساسي"
+    penalty: 0.8
+    repair_ops:
+      - "REPLACE"
+      - "DELETE_VIRTUAL"
+    status: "active"
+  
+  INV:ARTICLE_FORM:
+    inv_id: "INV:ARTICLE_FORM"
+    scope: "C2"
+    pattern: "أل التعريف يجب أن تسبق الاسم مباشرة"
+    penalty: 0.85
+    repair_ops:
+      - "INSERT_VIRTUAL"
+    status: "active"
+  
+  INV:DOUBLE_SUKUN_FORBIDDEN:
+    inv_id: "INV:DOUBLE_SUKUN_FORBIDDEN"
+    scope: "derived"
+    pattern: "لا يجوز التقاء ساكنين في النطق"
+    penalty: 0.9
+    repair_ops:
+      - "REPLACE"
+      - "INSERT_VIRTUAL"
+    status: "active"
+  
+  INV:TANWIN_FINAL_ONLY:
+    inv_id: "INV:TANWIN_FINAL_ONLY"
+    scope: "C2"
+    pattern: "التنوين يظهر في نهاية الكلمة فقط"
+    penalty: 0.85
+    repair_ops:
+      - "DELETE_VIRTUAL"
+    status: "active"
+  
+  INV:FEMININE_MARKER_AGREEMENT:
+    inv_id: "INV:FEMININE_MARKER_AGREEMENT"
+    scope: "C3"
+    pattern: "علامة التأنيث تتطلب تطابق النوع"
+    penalty: 0.75
+    repair_ops:
+      - "REPLACE"
+    status: "active"
+
+tags:
+  categories:
+    - "phonology"
+    - "morphology"
+    - "syntax"
+    - "semantics"
+    - "prosody"
+    - "orthography"
+  
+  features:
+    - "diacritic"
+    - "consonant"
+    - "vowel"
+    - "gemination"
+    - "liaison"
+    - "pause"
+    - "intonation"
+    - "definite"
+    - "indefinite"
+    - "masculine"
+    - "feminine"
+    - "singular"
+    - "dual"
+    - "plural"
+
+mappings:
+  renames: {}
+  deprecations: []
+  aliases: {}
+
+repair_operations:
+  REPLACE:
+    op_type: "REPLACE"
+    description: "استبدال وحدة بوحدة أخرى"
+    apply_stage: "DERIVED_ONLY"
+    params:
+      - target_unit_id
+      - replacement_unit_id
+  
+  INSERT_VIRTUAL:
+    op_type: "INSERT_VIRTUAL"
+    description: "إدراج وحدة افتراضية"
+    apply_stage: "DERIVED_ONLY"
+    params:
+      - position
+      - virtual_unit_id
+  
+  DELETE_VIRTUAL:
+    op_type: "DELETE_VIRTUAL"
+    description: "حذف وحدة افتراضية"
+    apply_stage: "DERIVED_ONLY"
+    params:
+      - virtual_unit_id
+
+unit_delta_ops:
+  description: "عمليات التحويل على الوحدات"
+  operations:
+    - REPLACE
+    - INSERT_VIRTUAL
+    - DELETE_VIRTUAL
+  constraints:
+    - "لا يمكن تطبيق العمليات إلا على طبقة DERIVED"
+    - "يجب توثيق كل عملية بدليل"

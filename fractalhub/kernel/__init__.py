@@ -1,0 +1,115 @@
+"""
+Fractal Consciousness Kernel v1.2
+
+A programmable kernel implementing C0-C1-C2-C3 architecture with:
+- C0: Phonological layer (segments/syllables/OCP)
+- C1: Signifier layer (form/phonemes/diacritics)
+- C2: Trace layer (gate processing with evidence)
+- C3: Signified layer (meaning graph)
+- Reasoning: Four modes (deductive/inductive/abductive/inferential)
+
+Based on النبهاني's theory: reality + brain + sensing + prior_knowledge
+
+Author: Eqratech Arabic Diana Project
+Version: 1.2.0
+License: MIT
+"""
+
+from .record import Record
+from .codec import FormCodec, MeaningCodec
+from .gates import Gate, GateRegistry
+from .trace import TraceEntry, C2Trace
+from .graph import SignifierGraph, SignifiedGraph
+from .phonology import (
+    SegmentType, VowelQuality, ConsonantPlace,
+    PhonologicalSegment, SyllableShape, Syllable,
+    OCPViolation, PhonologicalConstraintChecker,
+    SyllabificationEngine, PhonologicalGateResult,
+    PhonologicalGates, C0PhonologicalProcessor
+)
+from .speech_acts import (
+    SpeechAct, SpeechActType, SpeechActClassifier,
+    KhabarSubtype, TalabSubtype, IstifhamSubtype,
+    Ta3ajjubSubtype, TamanniSubtype, TarajjiSubtype
+)
+from .consciousness import (
+    ConsciousnessVector, AttentionState, MemoryStore, SelfState, ValueState,
+    AttentionScope, EpistemicLevel, Perspective, ValueDimension,
+    gate_attend, gate_memory_write, gate_memory_read
+)
+from .invariants import (
+    InvariantManager, ConservationChecker, SymmetryChecker,
+    ConservationRule, ConservationType, SymmetryRule, SymmetryType,
+    LinguisticInvariants
+)
+from .reasoning import (
+    ReasoningEngine, ReasoningMode, ReasoningStrength,
+    Premise, Conclusion, ReasoningStep,
+    DeductiveReasoner, InductiveReasoner, AbductiveReasoner, InferentialReasoner,
+    create_arabic_reasoning_engine
+)
+
+__version__ = "1.2.0"
+__all__ = [
+    "Record",
+    "FormCodec",
+    "MeaningCodec", 
+    "Gate",
+    "GateRegistry",
+    "TraceEntry",
+    "C2Trace",
+    "SignifierGraph",
+    "SignifiedGraph",
+    "SegmentType",
+    "VowelQuality",
+    "ConsonantPlace",
+    "PhonologicalSegment",
+    "SyllableShape",
+    "Syllable",
+    "OCPViolation",
+    "PhonologicalConstraintChecker",
+    "SyllabificationEngine",
+    "PhonologicalGateResult",
+    "PhonologicalGates",
+    "C0PhonologicalProcessor",
+    "SpeechAct",
+    "SpeechActType",
+    "SpeechActClassifier",
+    "KhabarSubtype",
+    "TalabSubtype",
+    "IstifhamSubtype",
+    "Ta3ajjubSubtype",
+    "TamanniSubtype",
+    "TarajjiSubtype",
+    "ConsciousnessVector",
+    "AttentionState",
+    "MemoryStore",
+    "SelfState",
+    "ValueState",
+    "AttentionScope",
+    "EpistemicLevel",
+    "Perspective",
+    "ValueDimension",
+    "gate_attend",
+    "gate_memory_write",
+    "gate_memory_read",
+    "InvariantManager",
+    "ConservationChecker",
+    "SymmetryChecker",
+    "ConservationRule",
+    "ConservationType",
+    "SymmetryRule",
+    "SymmetryType",
+    "LinguisticInvariants",
+    "ReasoningEngine",
+    "ReasoningMode",
+    "ReasoningStrength",
+    "Premise",
+    "Conclusion",
+    "ReasoningStep",
+    "DeductiveReasoner",
+    "InductiveReasoner",
+    "AbductiveReasoner",
+    "InferentialReasoner",
+    "create_arabic_reasoning_engine",
+]
