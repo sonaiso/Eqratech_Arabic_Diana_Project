@@ -64,9 +64,10 @@ def check_compatibility(version: str) -> bool:
         False
     """
     try:
-        version_float = float(version)
-        min_version_float = float(MIN_KERNEL_VERSION)
-        return version_float >= min_version_float
+        # Simple string comparison for version compatibility
+        # Since we use format X.Y, lexicographic comparison works for our use case
+        # For more complex versioning, consider using packaging.version module
+        return version >= MIN_KERNEL_VERSION
     except (ValueError, TypeError):
         return False
 
