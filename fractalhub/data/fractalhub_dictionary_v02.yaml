@@ -1,0 +1,659 @@
+# FractalHub Dictionary v02
+# Bilingual Arabic-English Dictionary with Provenance Schema
+# Supporting Al-Nabhani's Theory of Thinking
+
+meta:
+  dict_version: 2
+  codec_version: 1
+  schema_version: 1
+  generated_at: "2026-01-17T16:33:00Z"
+  compatibility:
+    v01_supported: true
+    breaking_changes: false
+  changelog:
+    - "Added provenance schema for all entries"
+    - "Separated signifier vs signified entry types"
+    - "Added ruleset_ids mapping"
+    - "Normalized structure with DRY principle"
+    - "Added bilingual support (Arabic/English)"
+  description_ar: "قاموس FractalHub مع تتبع المصادر الكامل"
+  description_en: "FractalHub Dictionary with full provenance tracking"
+
+# ============================================================================
+# PROVENANCE SOURCES
+# ============================================================================
+provenance:
+  sources:
+    CLASSICAL_CORPUS:
+      source_id: "CLASSICAL_CORPUS"
+      type: "corpus"
+      description_ar: "النصوص الكلاسيكية العربية"
+      description_en: "Classical Arabic texts"
+      reliability: 1.0
+      examples:
+        - "القرآن الكريم"
+        - "الشعر الجاهلي"
+        - "كتب النحو الكلاسيكية"
+      
+    MODERN_USAGE:
+      source_id: "MODERN_USAGE"
+      type: "corpus"
+      description_ar: "الاستخدام الحديث في النصوص المعاصرة"
+      description_en: "Modern usage patterns in contemporary texts"
+      reliability: 0.8
+      examples:
+        - "الصحف العربية"
+        - "الأدب المعاصر"
+      
+    LINGUISTIC_RULE:
+      source_id: "LINGUISTIC_RULE"
+      type: "ruleset"
+      description_ar: "القواعد اللغوية المستنبطة"
+      description_en: "Derived linguistic rules"
+      reliability: 0.9
+      examples:
+        - "قواعد سيبويه"
+        - "قواعد ابن عقيل"
+    
+    PHONOLOGICAL_CONSTRAINT:
+      source_id: "PHONOLOGICAL_CONSTRAINT"
+      type: "constraint"
+      description_ar: "القيود الصوتية"
+      description_en: "Phonological constraints"
+      reliability: 1.0
+      examples:
+        - "منع السكونين المتتاليين"
+        - "مبدأ البداية القصوى"
+
+# ============================================================================
+# LEXICON - Signifier and Signified Entries
+# ============================================================================
+lexicon:
+  
+  # -------------------------------------------------------------------------
+  # SIGNIFIERS (C1 Layer - Form Only)
+  # -------------------------------------------------------------------------
+  
+  # Short Vowels (Diacritics)
+  SIGNIFIER:FATHA:
+    entry_id: "SIGNIFIER:FATHA"
+    entry_type: "signifier"
+    layer: "C1"
+    form: "َ"
+    form_ar: "فتحة"
+    form_en: "fatha"
+    features:
+      - "diacritic"
+      - "short_vowel"
+      - "open"
+    phonetic: "/a/"
+    provenance:
+      - source_id: "CLASSICAL_CORPUS"
+        confidence: 1.0
+    status: "active"
+  
+  SIGNIFIER:KASRA:
+    entry_id: "SIGNIFIER:KASRA"
+    entry_type: "signifier"
+    layer: "C1"
+    form: "ِ"
+    form_ar: "كسرة"
+    form_en: "kasra"
+    features:
+      - "diacritic"
+      - "short_vowel"
+      - "front"
+    phonetic: "/i/"
+    provenance:
+      - source_id: "CLASSICAL_CORPUS"
+        confidence: 1.0
+    status: "active"
+  
+  SIGNIFIER:DAMMA:
+    entry_id: "SIGNIFIER:DAMMA"
+    entry_type: "signifier"
+    layer: "C1"
+    form: "ُ"
+    form_ar: "ضمة"
+    form_en: "damma"
+    features:
+      - "diacritic"
+      - "short_vowel"
+      - "rounded"
+    phonetic: "/u/"
+    provenance:
+      - source_id: "CLASSICAL_CORPUS"
+        confidence: 1.0
+    status: "active"
+  
+  SIGNIFIER:SUKUN:
+    entry_id: "SIGNIFIER:SUKUN"
+    entry_type: "signifier"
+    layer: "C1"
+    form: "ْ"
+    form_ar: "سكون"
+    form_en: "sukun"
+    features:
+      - "diacritic"
+      - "zero_vowel"
+      - "consonant_marker"
+    phonetic: "∅"
+    provenance:
+      - source_id: "CLASSICAL_CORPUS"
+        confidence: 1.0
+    status: "active"
+  
+  SIGNIFIER:TANWIN_FATH:
+    entry_id: "SIGNIFIER:TANWIN_FATH"
+    entry_type: "signifier"
+    layer: "C1"
+    form: "ً"
+    form_ar: "تنوين فتح"
+    form_en: "tanwin fath"
+    features:
+      - "diacritic"
+      - "nunation"
+      - "indefinite"
+    phonetic: "/an/"
+    provenance:
+      - source_id: "CLASSICAL_CORPUS"
+        confidence: 1.0
+    status: "active"
+  
+  # Word Examples (Signifiers)
+  SIGNIFIER:KITAB:
+    entry_id: "SIGNIFIER:KITAB"
+    entry_type: "signifier"
+    layer: "C1"
+    form: "كتاب"
+    form_ar: "كتاب"
+    form_en: "kitaab"
+    features:
+      - "noun"
+      - "masculine"
+      - "singular"
+    phonetic: "/kitaːb/"
+    provenance:
+      - source_id: "CLASSICAL_CORPUS"
+        confidence: 1.0
+    status: "active"
+  
+  SIGNIFIER:QALAM:
+    entry_id: "SIGNIFIER:QALAM"
+    entry_type: "signifier"
+    layer: "C1"
+    form: "قلم"
+    form_ar: "قلم"
+    form_en: "qalam"
+    features:
+      - "noun"
+      - "masculine"
+      - "singular"
+    phonetic: "/qalam/"
+    provenance:
+      - source_id: "CLASSICAL_CORPUS"
+        confidence: 1.0
+    status: "active"
+  
+  SIGNIFIER:KATABA:
+    entry_id: "SIGNIFIER:KATABA"
+    entry_type: "signifier"
+    layer: "C1"
+    form: "كتب"
+    form_ar: "كتب"
+    form_en: "kataba"
+    features:
+      - "verb"
+      - "past_tense"
+      - "3rd_person"
+      - "masculine"
+      - "singular"
+    phonetic: "/kataba/"
+    provenance:
+      - source_id: "CLASSICAL_CORPUS"
+        confidence: 1.0
+    status: "active"
+  
+  # -------------------------------------------------------------------------
+  # SIGNIFIEDS (C3 Layer - Meaning with Provenance)
+  # -------------------------------------------------------------------------
+  
+  SIGNIFIED:KITAB:BOOK:
+    entry_id: "SIGNIFIED:KITAB:BOOK"
+    entry_type: "signified"
+    layer: "C3"
+    concept_ar: "كتاب"
+    concept_en: "book"
+    semantic_features:
+      - "physical_object"
+      - "contains_writing"
+      - "information_carrier"
+      - "bound_pages"
+    ontology_type: "ENTITY"
+    provenance:
+      - source_id: "CLASSICAL_CORPUS"
+        confidence: 1.0
+      - source_id: "MODERN_USAGE"
+        confidence: 0.9
+    linked_signifiers:
+      - "SIGNIFIER:KITAB"
+    status: "active"
+  
+  SIGNIFIED:QALAM:PEN:
+    entry_id: "SIGNIFIED:QALAM:PEN"
+    entry_type: "signified"
+    layer: "C3"
+    concept_ar: "قلم"
+    concept_en: "pen"
+    semantic_features:
+      - "physical_object"
+      - "writing_instrument"
+      - "tool"
+    ontology_type: "ENTITY"
+    provenance:
+      - source_id: "CLASSICAL_CORPUS"
+        confidence: 1.0
+      - source_id: "MODERN_USAGE"
+        confidence: 1.0
+    linked_signifiers:
+      - "SIGNIFIER:QALAM"
+    status: "active"
+  
+  SIGNIFIED:KATABA:WRITE:
+    entry_id: "SIGNIFIED:KATABA:WRITE"
+    entry_type: "signified"
+    layer: "C3"
+    concept_ar: "كتابة"
+    concept_en: "writing"
+    semantic_features:
+      - "action"
+      - "communication"
+      - "recording"
+      - "creation"
+    ontology_type: "EVENT"
+    provenance:
+      - source_id: "CLASSICAL_CORPUS"
+        confidence: 1.0
+      - source_id: "MODERN_USAGE"
+        confidence: 1.0
+    linked_signifiers:
+      - "SIGNIFIER:KATABA"
+    status: "active"
+
+# ============================================================================
+# RULESETS - Phonological, Morphological, Syntactic
+# ============================================================================
+rulesets:
+  
+  # -------------------------------------------------------------------------
+  # PHONOLOGICAL RULES (C0 Layer)
+  # -------------------------------------------------------------------------
+  
+  PHONOLOGY:DOUBLE_SUKUN:
+    ruleset_id: "PHONOLOGY:DOUBLE_SUKUN"
+    type: "phonological"
+    description_ar: "منع السكونين المتتاليين"
+    description_en: "Prohibition of consecutive sukuns"
+    layer: "C0"
+    constraint: "NO_CONSECUTIVE_SUKUN"
+    penalty: 0.9
+    repair_ops:
+      - "INSERT_VOWEL"
+      - "DELETE_CONSONANT"
+    provenance:
+      - source_id: "PHONOLOGICAL_CONSTRAINT"
+        confidence: 1.0
+    status: "active"
+    examples:
+      - input: "كتبْ + ت"
+        violation: "sukun before t"
+        repair: "كتبَت"
+  
+  PHONOLOGY:MAXIMAL_ONSET:
+    ruleset_id: "PHONOLOGY:MAXIMAL_ONSET"
+    type: "phonological"
+    description_ar: "مبدأ البداية القصوى"
+    description_en: "Maximal onset principle"
+    layer: "C0"
+    constraint: "MAXIMAL_ONSET"
+    penalty: 0.7
+    provenance:
+      - source_id: "LINGUISTIC_RULE"
+        confidence: 0.9
+    status: "active"
+  
+  PHONOLOGY:OCP_VIOLATION:
+    ruleset_id: "PHONOLOGY:OCP_VIOLATION"
+    type: "phonological"
+    description_ar: "مبدأ القيد على المتشابهات"
+    description_en: "Obligatory Contour Principle"
+    layer: "C0"
+    constraint: "OCP"
+    penalty: 0.8
+    provenance:
+      - source_id: "LINGUISTIC_RULE"
+        confidence: 0.85
+    status: "active"
+  
+  # -------------------------------------------------------------------------
+  # MORPHOLOGICAL RULES (C1 Layer)
+  # -------------------------------------------------------------------------
+  
+  MORPHOLOGY:BROKEN_PLURAL:
+    ruleset_id: "MORPHOLOGY:BROKEN_PLURAL"
+    type: "morphological"
+    description_ar: "جموع التكسير"
+    description_en: "Broken plural patterns"
+    layer: "C1"
+    patterns:
+      - pattern: "FU3UL"
+        example: "كُتُب"
+        ar: "فُعُل"
+      - pattern: "AF3AL"
+        example: "أقلام"
+        ar: "أفعال"
+      - pattern: "FU3ALA"
+        example: "علماء"
+        ar: "فُعَلاء"
+    provenance:
+      - source_id: "CLASSICAL_CORPUS"
+        confidence: 1.0
+    status: "active"
+  
+  MORPHOLOGY:SOUND_MASCULINE_PLURAL:
+    ruleset_id: "MORPHOLOGY:SOUND_MASCULINE_PLURAL"
+    type: "morphological"
+    description_ar: "جمع المذكر السالم"
+    description_en: "Sound masculine plural"
+    layer: "C1"
+    suffix_nom: "ون"
+    suffix_acc_gen: "ين"
+    provenance:
+      - source_id: "CLASSICAL_CORPUS"
+        confidence: 1.0
+    status: "active"
+  
+  MORPHOLOGY:SOUND_FEMININE_PLURAL:
+    ruleset_id: "MORPHOLOGY:SOUND_FEMININE_PLURAL"
+    type: "morphological"
+    description_ar: "جمع المؤنث السالم"
+    description_en: "Sound feminine plural"
+    layer: "C1"
+    suffix: "ات"
+    provenance:
+      - source_id: "CLASSICAL_CORPUS"
+        confidence: 1.0
+    status: "active"
+  
+  # -------------------------------------------------------------------------
+  # SYNTACTIC RULES (C2/C3 Layer)
+  # -------------------------------------------------------------------------
+  
+  SYNTAX:VERB_SUBJECT_AGREEMENT:
+    ruleset_id: "SYNTAX:VERB_SUBJECT_AGREEMENT"
+    type: "syntactic"
+    description_ar: "التوافق بين الفعل والفاعل"
+    description_en: "Verb-subject agreement"
+    layer: "C2"
+    constraints:
+      - "number_agreement"
+      - "gender_agreement"
+    provenance:
+      - source_id: "LINGUISTIC_RULE"
+        confidence: 1.0
+    status: "active"
+  
+  SYNTAX:IDAFA_CONSTRUCT:
+    ruleset_id: "SYNTAX:IDAFA_CONSTRUCT"
+    type: "syntactic"
+    description_ar: "التركيب الإضافي"
+    description_en: "Idafa (possessive) construct"
+    layer: "C2"
+    constraints:
+      - "mudaf_no_nunation"
+      - "mudaf_ilayh_required"
+    provenance:
+      - source_id: "LINGUISTIC_RULE"
+        confidence: 1.0
+    status: "active"
+
+# ============================================================================
+# GATES - C2 Layer Processing
+# ============================================================================
+gates:
+  
+  G_ATTEND:
+    gate_id: "G_ATTEND"
+    gate_type: "attention"
+    description_ar: "بوابة الانتباه"
+    description_en: "Attention gate"
+    layer: "C2"
+    function: "Focus on relevant form elements"
+    requires_four_conditions: true
+    provenance:
+      - source_id: "LINGUISTIC_RULE"
+        confidence: 1.0
+    status: "active"
+  
+  G_CODEC_VERIFY:
+    gate_id: "G_CODEC_VERIFY"
+    gate_type: "verification"
+    description_ar: "بوابة التحقق من الترميز"
+    description_en: "Codec verification gate"
+    layer: "C2"
+    function: "Verify form encoding integrity"
+    requires_four_conditions: true
+    provenance:
+      - source_id: "LINGUISTIC_RULE"
+        confidence: 1.0
+    status: "active"
+  
+  G_SPEECH_ACT:
+    gate_id: "G_SPEECH_ACT"
+    gate_type: "recognition"
+    description_ar: "بوابة الفعل الكلامي"
+    description_en: "Speech act recognition gate"
+    layer: "C2"
+    function: "Identify speech act type (KHABAR, TALAB, etc.)"
+    requires_four_conditions: true
+    supported_types:
+      - "KHABAR"
+      - "TALAB"
+      - "ISTIFHAM"
+      - "TA3AJJUB"
+      - "TAMANNI"
+      - "TARAJJI"
+    provenance:
+      - source_id: "LINGUISTIC_RULE"
+        confidence: 1.0
+    status: "active"
+  
+  G_MEMORY_READ:
+    gate_id: "G_MEMORY_READ"
+    gate_type: "retrieval"
+    description_ar: "بوابة قراءة الذاكرة"
+    description_en: "Memory retrieval gate"
+    layer: "C2"
+    function: "Retrieve prior knowledge"
+    requires_four_conditions: true
+    provenance:
+      - source_id: "LINGUISTIC_RULE"
+        confidence: 1.0
+    status: "active"
+  
+  G_MEMORY_WRITE:
+    gate_id: "G_MEMORY_WRITE"
+    gate_type: "storage"
+    description_ar: "بوابة كتابة الذاكرة"
+    description_en: "Memory storage gate"
+    layer: "C2"
+    function: "Store new knowledge with provenance"
+    requires_four_conditions: true
+    provenance:
+      - source_id: "LINGUISTIC_RULE"
+        confidence: 1.0
+    status: "active"
+
+# ============================================================================
+# EVIDENCE REQUIREMENTS
+# ============================================================================
+evidence:
+  
+  epistemic_strength:
+    YAQIN:
+      name_ar: "يقين"
+      name_en: "certainty"
+      strength: 1.0
+      description_ar: "اليقين الكامل"
+      description_en: "Complete certainty"
+    
+    ZANN:
+      name_ar: "ظن"
+      name_en: "probability"
+      strength: 0.7
+      description_ar: "الظن الراجح"
+      description_en: "Strong probability"
+    
+    SHAKK:
+      name_ar: "شك"
+      name_en: "doubt"
+      strength: 0.4
+      description_ar: "الشك"
+      description_en: "Doubt"
+  
+  reasoning_modes:
+    DEDUCTIVE:
+      mode_ar: "استنتاجي"
+      mode_en: "deductive"
+      requires_prior_ids: true
+      min_strength: 0.9
+    
+    INDUCTIVE:
+      mode_ar: "استقرائي"
+      mode_en: "inductive"
+      requires_prior_ids: true
+      min_strength: 0.7
+    
+    ABDUCTIVE:
+      mode_ar: "استدلالي"
+      mode_en: "abductive"
+      requires_prior_ids: true
+      min_strength: 0.6
+    
+    INFERENTIAL:
+      mode_ar: "استنباطي"
+      mode_en: "inferential"
+      requires_prior_ids: true
+      min_strength: 0.7
+
+# ============================================================================
+# INVARIANTS - Conservation Laws & Symmetry Rules
+# ============================================================================
+invariants:
+  
+  conservation_laws:
+    TEMPORAL:
+      law_id: "TEMPORAL_CONSERVATION"
+      description_ar: "حفظ الترتيب الزمني"
+      description_en: "Temporal order conservation"
+      constraint: "Events must maintain temporal consistency"
+      penalty: 0.9
+    
+    REFERENTIAL:
+      law_id: "REFERENTIAL_CONSERVATION"
+      description_ar: "حفظ الإحالة"
+      description_en: "Referential consistency"
+      constraint: "References must be resolvable"
+      penalty: 0.95
+    
+    CAUSAL:
+      law_id: "CAUSAL_CONSERVATION"
+      description_ar: "حفظ السببية"
+      description_en: "Causal consistency"
+      constraint: "Causes must precede effects"
+      penalty: 0.9
+    
+    PREDICATIVE:
+      law_id: "PREDICATIVE_CONSERVATION"
+      description_ar: "حفظ الإسناد"
+      description_en: "Predicative consistency"
+      constraint: "Predicates must match arguments"
+      penalty: 0.85
+    
+    QUANTITATIVE:
+      law_id: "QUANTITATIVE_CONSERVATION"
+      description_ar: "حفظ الكمية"
+      description_en: "Quantitative consistency"
+      constraint: "Quantities must be preserved"
+      penalty: 0.8
+    
+    SCOPE:
+      law_id: "SCOPE_CONSERVATION"
+      description_ar: "حفظ النطاق"
+      description_en: "Scope consistency"
+      constraint: "Scope boundaries must be maintained"
+      penalty: 0.85
+  
+  symmetry_rules:
+    LOGICAL:
+      rule_id: "LOGICAL_SYMMETRY"
+      description_ar: "التماثل المنطقي"
+      description_en: "Logical symmetry"
+      constraint: "Logical operations preserve truth"
+    
+    STRUCTURAL:
+      rule_id: "STRUCTURAL_SYMMETRY"
+      description_ar: "التماثل البنيوي"
+      description_en: "Structural symmetry"
+      constraint: "Structure preserved under transformation"
+    
+    SEMANTIC:
+      rule_id: "SEMANTIC_SYMMETRY"
+      description_ar: "التماثل الدلالي"
+      description_en: "Semantic symmetry"
+      constraint: "Meaning preserved under paraphrase"
+    
+    PRAGMATIC:
+      rule_id: "PRAGMATIC_SYMMETRY"
+      description_ar: "التماثل التداولي"
+      description_en: "Pragmatic symmetry"
+      constraint: "Communicative intent preserved"
+
+# ============================================================================
+# MAPPINGS - Cross-Layer References
+# ============================================================================
+mappings:
+  
+  signifier_to_signified:
+    KITAB:
+      signifier: "SIGNIFIER:KITAB"
+      signifieds:
+        - "SIGNIFIED:KITAB:BOOK"
+      context_required: false
+    
+    QALAM:
+      signifier: "SIGNIFIER:QALAM"
+      signifieds:
+        - "SIGNIFIED:QALAM:PEN"
+      context_required: false
+    
+    KATABA:
+      signifier: "SIGNIFIER:KATABA"
+      signifieds:
+        - "SIGNIFIED:KATABA:WRITE"
+      context_required: false
+  
+  ruleset_to_layer:
+    C0:
+      - "PHONOLOGY:DOUBLE_SUKUN"
+      - "PHONOLOGY:MAXIMAL_ONSET"
+      - "PHONOLOGY:OCP_VIOLATION"
+    
+    C1:
+      - "MORPHOLOGY:BROKEN_PLURAL"
+      - "MORPHOLOGY:SOUND_MASCULINE_PLURAL"
+      - "MORPHOLOGY:SOUND_FEMININE_PLURAL"
+    
+    C2:
+      - "SYNTAX:VERB_SUBJECT_AGREEMENT"
+      - "SYNTAX:IDAFA_CONSTRUCT"
