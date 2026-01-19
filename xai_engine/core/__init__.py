@@ -13,6 +13,15 @@ from .output_objects import (
     ExplanationReport,
     BeforeAfterChain,
 )
+from .explanatory_schema import (
+    ExplanatoryReport,
+    ExecutiveSummary,
+    LayerTrace,
+    FailurePoint,
+    ScopeDefinition,
+    GovernanceAnnotation,
+)
+from .report_generator import ReportGenerator
 
 __all__ = [
     "Domain",
@@ -25,4 +34,11 @@ __all__ = [
     "EpistemicWeight",
     "ExplanationReport",
     "BeforeAfterChain",
+    "ExplanatoryReport",
+    "ExecutiveSummary",
+    "LayerTrace",
+    "FailurePoint",
+    "ScopeDefinition",
+    "GovernanceAnnotation",
+    "ReportGenerator",
 ]
