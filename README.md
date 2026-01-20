@@ -1,10 +1,26 @@
-# FractalHub: Fractal Consciousness Kernel v1.2
+# FractalHub: Fractal Consciousness Kernel v1.2 + Coq Formalization
 
-> A consciousness platform implementing Al-Nabhani's Theory of Thinking with complete separation between signifier and signified, preventing hallucinations through locked architecture.
+> A consciousness platform implementing Al-Nabhani's Theory of Thinking with complete separation between signifier and signified, preventing hallucinations through locked architecture. **Now with formal verification in Coq!**
 
 [![Tests](https://img.shields.io/badge/tests-96%20passing-success)]()
 [![Version](https://img.shields.io/badge/kernel-v1.2-blue)]()
 [![Dictionary](https://img.shields.io/badge/dictionary-v02-blue)]()
+[![Coq](https://img.shields.io/badge/coq-formalized-green)]()
+[![Theorems](https://img.shields.io/badge/theorems-14%2F18%20proven-yellow)]()
+
+---
+
+## 🔬 Formal Verification
+
+FractalHub now includes a **complete formal specification in Coq**, proving the core architectural invariants that prevent hallucinations:
+
+- ✓ **Theorem**: NO C2 without C1 four conditions (**Proven**)
+- ✓ **Theorem**: Locked architecture holds (**Proven**)
+- ✓ **Theorem**: No hallucinations (**Proven**)
+- ⚠ **Theorem**: NO C3 without C2 trace (Admitted - proof in progress)
+- ⚠ **Theorem**: NO meaning without prior_ids (Admitted - proof in progress)
+
+[→ See Coq formalization](coq/README.md) | [→ Roadmap](coq/ROADMAP.md)
 
 ---
 
