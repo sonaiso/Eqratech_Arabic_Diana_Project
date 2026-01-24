@@ -12,30 +12,39 @@ This directory contains the formal Coq verification of the XAI Engine architectu
 1. **Spaces.v** (289 lines)
    - 8 thinking spaces (فضاءات التفكير الثمانية)
    - Temporal and dependency relations
-   - 9 theorems with proofs
+   - 3 theorems with proofs
 
 2. **Worlds.v** (312 lines)
    - 5 world types (أنواع العوالم الخمسة)
    - Accessibility relations
    - **NoTruthLeakage** axiom and proofs
    - Prevention of truth leakage between worlds
+   - 6 theorems with proofs
 
 3. **SignifierSignified.v** (287 lines)
    - Separation of signifier/signified/binding (الدال/المدلول/الربط)
    - 3 denotation types (المطابقة/التضمن/الالتزام)
    - Evidence requirements in actual world
+   - 2 theorems with proofs
+
+4. **Evidence.v** (305 lines) ✨ **NEW**
+   - Evidence structure with sources and strength (الأدلة والقوة)
+   - Epistemic weight classification (يقين/ظن/شك/وهم)
+   - Truth definitions based on evidence
+   - **NoTruthWithoutEvidence** axiom
+   - Evidence combination and aggregation
+   - 11 theorems with proofs
 
 ### To Be Implemented / المتبقي ⚠️
 
-4. **GenusAttributes.v** - Ontology (الجنس والصفات)
-5. **Agency.v** - Agency and causality (الفاعلية والسببية)
-6. **Predication.v** - Predication and restriction (الإسناد والتقييد)
-7. **Denotation.v** - Extended denotation theory (نظرية الدلالة)
-8. **Counterfactual.v** - Counterfactual reasoning (التفكير المضاد)
-9. **TheoryOfMind.v** - Belief and knowledge (نظرية العقل)
-10. **MetaCognition.v** - Metacognitive reasoning (ما وراء المعرفة)
-11. **Creativity.v** - Structural creativity (الإبداع البنيوي)
-12. **Evidence.v** - Evidence and truth (الأدلة والحقيقة)
+5. **GenusAttributes.v** - Ontology (الجنس والصفات)
+6. **Agency.v** - Agency and causality (الفاعلية والسببية)
+7. **Predication.v** - Predication and restriction (الإسناد والتقييد)
+8. **Denotation.v** - Extended denotation theory (نظرية الدلالة)
+9. **Counterfactual.v** - Counterfactual reasoning (التفكير المضاد)
+10. **TheoryOfMind.v** - Belief and knowledge (نظرية العقل)
+11. **MetaCognition.v** - Metacognitive reasoning (ما وراء المعرفة)
+12. **Creativity.v** - Structural creativity (الإبداع البنيوي)
 13. **Constraints.v** - 8 architectural constraints (القيود الثمانية)
 14. **Theorems.v** - Main theorems and proofs (النظريات الرئيسية)
 
@@ -67,14 +76,14 @@ make
 ## Statistics / الإحصائيات
 
 **Current / الحالي:**
-- Files implemented: 3/14 (21%)
-- Lines of code: ~888 lines
-- Theorems proved: 9
-- Axioms used: 4
+- Files implemented: 4/14 (29%)
+- Lines of code: ~1,193 lines
+- Theorems proved: 20
+- Axioms used: 5
 
 **Estimated total / المقدر الكلي:**
 - Lines: 3000-5000
-- Time: 2-3 months
+- Time: 1.5-2.5 months remaining
 - Theorems: 30-50
 
 ## Key Theorems / النظريات الأساسية
@@ -94,18 +103,33 @@ make
 1. `no_claim_without_evidence_in_actual` - Claims require evidence
 2. `every_c2_concept_has_signifier` - All C2 concepts have signifiers
 
+### Evidence.v ✨ **NEW**
+1. `valid_evidence_bounded` - Valid evidence has strength ≤ 100
+2. `strong_truth_implies_truth` - Strong truth implies regular truth
+3. `combine_preserves_validity` - Evidence combination preserves validity
+4. `classification_total` - Epistemic classification is total
+5. `yaqin_strong` - Yaqin requires strength ≥ 90
+6. `wahm_weak` - Wahm implies strength < 40
+7. `evidence_monotonic` - Evidence strength is monotonic
+8. `aggregate_max_bounded` - Aggregate maximum is bounded
+9. `non_empty_has_max` - Non-empty lists have maximum
+10. `stronger_irreflexive` - Stronger relation is irreflexive
+11. `stronger_transitive` - Stronger relation is transitive
+
 ## Critical Axioms / القيود الحرجة
 
 1. **NoTruthLeakage** (Worlds.v) - Prevents truth claims from non-actual worlds affecting actual world
 2. **NoSignifiedWithoutSignifier** (SignifierSignified.v) - Every concept must have a signifier
 3. **NoBindingWithoutEvidenceInActual** (SignifierSignified.v) - Bindings in actual world require evidence
 4. **MutabaqaImpliesTadammun** (SignifierSignified.v) - Full meaning implies partial meaning
+5. **NoTruthWithoutEvidence** (Evidence.v) ✨ **NEW** - No truth claims without evidence in actual world
 
 ## Usage Example / مثال الاستخدام
 
 ```coq
 Require Import Spaces.
 Require Import Worlds.
+Require Import Evidence.
 
 (* Create actual world in C2 *)
 Definition w_actual := {|
@@ -115,8 +139,17 @@ Definition w_actual := {|
   wtime := Some 0
 |}.
 
-(* Prove it's valid *)
-Theorem actual_is_valid : wkind w_actual = W_Actual.
+(* Create evidence *)
+Definition e1 := {|
+  ev_id := 1;
+  ev_content := True;
+  ev_source := ES_Observation;
+  ev_strength := 95;
+  ev_world := w_actual
+|}.
+
+(* Prove evidence is strong (Yaqin) *)
+Theorem e1_is_yaqin : classify_epistemic_weight (ev_strength e1) = EW_Yaqin.
 Proof.
   simpl. reflexivity.
 Qed.
@@ -130,6 +163,8 @@ Spaces (8 spaces)
 Worlds (5 world types + accessibility)
   ↓
 SignifierSignified (3 layers + binding)
+  ↓
+Evidence (epistemic weights + truth) ✨ NEW
   ↓
 [Future modules...]
 ```
@@ -151,5 +186,5 @@ Same as parent project.
 
 ---
 
-**Status:** In Progress (21% complete) 🚧  
-**Last Updated:** 2026-01-22
+**Status:** In Progress (29% complete - 4/14 modules) 🚧  
+**Last Updated:** 2026-01-24
