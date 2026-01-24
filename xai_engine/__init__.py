@@ -48,6 +48,14 @@ from .ctegate_domains import (
     DomainViolation,
     evaluate_with_domain,
 )
+from .fractalhub_integration import (
+    FractalHubIntegration,
+    LexiconEntry,
+    ProvenanceInfo,
+    EpistemicLevel,
+    load_fractalhub_integration,
+    is_fractalhub_available,
+)
 
 __all__ = [
     "XAIEngine",
@@ -66,4 +74,11 @@ __all__ = [
     "DomainCondition",
     "DomainViolation",
     "evaluate_with_domain",
+    # FractalHub Integration
+    "FractalHubIntegration",
+    "LexiconEntry",
+    "ProvenanceInfo",
+    "EpistemicLevel",
+    "load_fractalhub_integration",
+    "is_fractalhub_available",
 ]
