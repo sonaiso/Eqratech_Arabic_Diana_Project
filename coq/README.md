@@ -54,11 +54,32 @@ This directory contains the formal Coq verification of the XAI Engine architectu
    - Complete system correctness theorem
    - 21 theorems with proofs
 
+7. **GenusAttributes.v** (260 lines) ✨ **NEW**
+   - Ontological categories (الجنس والصفات)
+   - 10 Aristotelian categories
+   - Genus-species hierarchy
+   - Essential vs accidental attributes
+   - Entity-attribute relations
+   - 8 theorems with proofs
+
+8. **Agency.v** (240 lines) ✨ **NEW**
+   - Agent and action theory (الفاعلية والسببية)
+   - Causality formalization
+   - Intention and goal-directed actions
+   - Patient-action relations
+   - Causal transitivity and non-circularity
+   - 10 theorems with proofs
+
+9. **Predication.v** (260 lines) ✨ **NEW**
+   - Subject-predicate relations (الإسناد)
+   - Proposition structure (قضية)
+   - Truth of propositions
+   - Contradiction and contrariety
+   - Inference rules
+   - 10 theorems with proofs
+
 ### To Be Implemented / المتبقي ⚠️
 
-7. **GenusAttributes.v** - Ontology (الجنس والصفات)
-8. **Agency.v** - Agency and causality (الفاعلية والسببية)
-9. **Predication.v** - Predication and restriction (الإسناد والتقييد)
 10. **Denotation.v** - Extended denotation theory (نظرية الدلالة)
 11. **Counterfactual.v** - Counterfactual reasoning (التفكير المضاد)
 12. **TheoryOfMind.v** - Belief and knowledge (نظرية العقل)
@@ -93,22 +114,23 @@ make
 ## Statistics / الإحصائيات
 
 **Current / الحالي:**
-- Files implemented: 6/14 (43%) ⬆️
-- Lines of code: ~1,878 lines ⬆️
-- Theorems proved: 53 ⬆️
-- Axioms used: 6
-- Quality: 87/100 (Excellent) ⬆️
+- Files implemented: 9/14 (64%) ⬆️
+- Lines of code: ~2,638 lines ⬆️
+- Theorems proved: 81 ⬆️
+- Axioms used: 15
+- Quality: 88/100 (Excellent) ⬆️
 
 **Progress:**
 - Week 1: Spaces + Worlds + SignifierSignified (21%)
 - Week 2: Evidence (29%)
-- Week 3: Constraints + Theorems (43%) ⬆️
-- Remaining: 8 modules (57%)
+- Week 3: Constraints + Theorems (43%)
+- Week 4: GenusAttributes + Agency + Predication (64%) ⬆️
+- Remaining: 5 modules (36%)
 
 **Estimated total / المقدر الكلي:**
-- Lines: 3000-5000
-- Time: 1.5-2.5 months remaining
-- Theorems: 30-50
+- Lines: 3500-4000
+- Time: 3-4 weeks remaining
+- Theorems: 100-120
 
 ## Key Theorems / النظريات الأساسية
 
@@ -210,5 +232,5 @@ Same as parent project.
 
 ---
 
-**Status:** In Progress (29% complete - 4/14 modules) 🚧  
+**Status:** In Progress (64% complete - 9/14 modules) 🚧  
 **Last Updated:** 2026-01-24
