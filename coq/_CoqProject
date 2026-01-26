@@ -1,0 +1,10 @@
+-R theories FractalHub
+-arg -w -arg -notation-overridden
+
+theories/Base.v
+theories/Layers.v
+theories/Trace.v
+theories/Gates.v
+theories/Invariants.v
+theories/LockedArchitecture.v
+theories/Extraction.v
